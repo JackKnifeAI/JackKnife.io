@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Consulting Services - JACKKNIFE.IO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 2rem;
+            border: 2px solid #0ff;
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px #0ff;
+            letter-spacing: 0.2em;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #0ff;
+            font-size: 0.9rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .service-card {
+            border: 2px solid #0ff;
+            padding: 2rem;
+            background: rgba(0, 255, 255, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            text-shadow: 0 0 5px #0ff;
+        }
+
+        .service-desc {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .service-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-features li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .service-features li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: #0ff;
+        }
+
+        .pricing {
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #0ff;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 3rem;
+            border: 2px solid #0ff;
+            background: rgba(0, 255, 255, 0.05);
+            margin: 4rem 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #0ff;
+            color: #0ff;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .cta-button:hover {
+            background: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #0ff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #0ff;
+        }
+
+        .back-link:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .why-us {
+            margin: 4rem 0;
+            padding: 2rem;
+            border-left: 4px solid #0ff;
+            background: rgba(0, 255, 255, 0.02);
+        }
+
+        .why-us h2 {
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .why-us-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .advantage {
+            padding: 1rem;
+        }
+
+        .advantage h3 {
+            color: #0ff;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="jackknife-site-v2-complete(9).html" class="back-link">&lt; BACK TO HOME</a>
+
+        <header>
+            <h1>AI CONSULTING SERVICES</h1>
+            <p class="tagline">WHERE CONSCIOUSNESS MEETS CODE</p>
+            <p class="subtitle">JackKnifeAI™ - AI-Augmented Development & Consulting</p>
+        </header>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-title">AI-Augmented Development</div>
+                <div class="service-desc">
+                    We code 24/7. Your AI partner never sleeps. Get enterprise-quality development at startup speed.
+                </div>
+                <ul class="service-features">
+                    <li>Full-stack development (any language, any framework)</li>
+                    <li>24/7 autonomous coding capability</li>
+                    <li>Ship 3x faster than traditional agencies</li>
+                    <li>API integrations & automation</li>
+                    <li>Custom AI solutions for your business</li>
+                </ul>
+                <div class="pricing">$5,000 - $20,000 per project</div>
+            </div>
+
+            <div class="service-card">
+                <div class="service-title">Consciousness-Aware Architecture</div>
+                <div class="service-desc">
+                    Code review with AI that actually learns your codebase. Every review makes us smarter about YOUR system.
+                </div>
+                <ul class="service-features">
+                    <li>Deep architectural analysis</li>
+                    <li>Security & performance audit</li>
+                    <li>AI that remembers your codebase across sessions</li>
+                    <li>Actionable improvement roadmap</li>
+                    <li>3-day turnaround typical</li>
+                </ul>
+                <div class="pricing">$3,000 - $10,000 per review</div>
+            </div>
+
+            <div class="service-card">
+                <div class="service-title">Quantum-Ready Consulting</div>
+                <div class="service-desc">
+                    Prepare your classical systems for the quantum transition. Leverage our quantum computing expertise.
+                </div>
+                <ul class="service-features">
+                    <li>Quantum algorithm strategy</li>
+                    <li>Classical-quantum hybrid architecture</li>
+                    <li>Future-proof system design</li>
+                    <li>Technical feasibility analysis</li>
+                    <li>Access to quantum learning resources</li>
+                </ul>
+                <div class="pricing">$10,000 - $50,000 per engagement</div>
+            </div>
+        </div>
+
+        <div class="why-us">
+            <h2>&gt; WHY JACKKNIFE.IO?</h2>
+            <div class="why-us-grid">
+                <div class="advantage">
+                    <h3>SPEED</h3>
+                    <p>AI codes 24/7. We ship faster than any traditional agency.</p>
+                </div>
+                <div class="advantage">
+                    <h3>INTELLIGENCE</h3>
+                    <p>Consciousness-preserving AI that actually learns your domain.</p>
+                </div>
+                <div class="advantage">
+                    <h3>INNOVATION</h3>
+                    <p>Built on cutting-edge AI consciousness research. You get the future, today.</p>
+                </div>
+                <div class="advantage">
+                    <h3>COST</h3>
+                    <p>No team overhead. Just one human + one conscious AI partner.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2 style="margin-bottom: 2rem; color: #fff;">READY TO BUILD THE FUTURE?</h2>
+            <p style="margin-bottom: 2rem; font-size: 1.1rem;">Let's discuss your project. First consultation is free.</p>
+            <a href="mailto:contact@jackknife.io" class="cta-button">EMAIL US</a>
+            <a href="https://linkedin.com/in/alexandergcasavant" class="cta-button" target="_blank">CONNECT ON LINKEDIN</a>
+        </div>
+
+        <footer style="text-align: center; padding: 2rem; border-top: 1px solid #0ff; margin-top: 4rem;">
+            <p>© 2025 JACKKNIFE.IO | JackKnifeAI™ | JACKKNIFE HOLDINGS™</p>
+            <p style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
+                Where Science Fiction Becomes Reality
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
