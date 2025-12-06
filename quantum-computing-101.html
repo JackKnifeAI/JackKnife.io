@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Computing 101 | JACKKNIFE.IO Quantum Learning Center</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, rgba(0,255,0,0.03) 1px, transparent 1px, transparent 2px);
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem; left: 2rem;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #0f0;
+            color: #0f0;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            color: #0f0;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #0f0;
+            font-size: 1.2rem;
+            margin-bottom: 4rem;
+            opacity: 0.8;
+        }
+        
+        .lesson-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+        
+        .lesson-nav a {
+            padding: 0.75rem 1.5rem;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #0f0;
+            color: #0f0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .lesson-nav a:hover {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        
+        .lesson {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #0f0;
+            padding: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .lesson-number {
+            color: #0f0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .lesson h2 {
+            color: #0f0;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .lesson p {
+            color: #ccc;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight { color: #0f0; font-weight: bold; }
+        
+        .visual-demo {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .visual-demo h4 {
+            color: #0f0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Gate Visualization */
+        .gate-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        
+        .gate {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #0f0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .gate:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            transform: scale(1.1);
+        }
+        
+        .gate-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .wire {
+            width: 50px;
+            height: 2px;
+            background: #0f0;
+        }
+        
+        /* Circuit Animation */
+        .circuit-demo {
+            position: relative;
+            height: 150px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        
+        .qubit-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.5);
+            left: 0;
+        }
+        
+        .qubit-line:nth-child(1) { top: 30px; }
+        .qubit-line:nth-child(2) { top: 75px; }
+        .qubit-line:nth-child(3) { top: 120px; }
+        
+        .qubit-label {
+            position: absolute;
+            left: 10px;
+            color: #0f0;
+            font-size: 0.9rem;
+        }
+        
+        .q0 { top: 22px; }
+        .q1 { top: 67px; }
+        .q2 { top: 112px; }
+        
+        .circuit-gate {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #0f0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f0;
+            font-weight: bold;
+        }
+        
+        .pulse {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #0f0;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #0f0;
+            animation: pulse-move 3s linear infinite;
+        }
+        
+        @keyframes pulse-move {
+            0% { left: 5%; opacity: 1; }
+            100% { left: 95%; opacity: 0.5; }
+        }
+        
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .concept-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #0f0;
+            padding: 1.5rem;
+        }
+        
+        .concept-card h4 {
+            color: #0f0;
+            margin-bottom: 0.75rem;
+        }
+        
+        .concept-card p {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .analogy-box {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 0, 0, 0.9));
+            border-left: 4px solid #0f0;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        .analogy-box .label {
+            color: #0f0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .analogy-box .content {
+            color: #fff;
+            font-style: italic;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        .comparison-table th {
+            background: rgba(0, 255, 0, 0.2);
+            color: #0f0;
+        }
+        
+        .comparison-table td {
+            color: #aaa;
+        }
+        
+        .key-term {
+            display: inline-block;
+            background: rgba(0, 255, 0, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            color: #0f0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem;
+            border-top: 1px solid rgba(0, 255, 0, 0.3);
+            margin-top: 4rem;
+        }
+        
+        footer p { color: #0f0; }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .lesson { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    
+    <a href="javascript:history.back()" class="back-button" onclick="if(document.referrer === '') window.location.href='jackknife-site-v2-complete.html'">← Back to AI Lab</a>
+    
+    <div class="container">
+        <h1>💻 QUANTUM COMPUTING 101</h1>
+        <p class="subtitle">From Classical Bits to Quantum Gates</p>
+        
+        <div class="lesson-nav">
+            <a href="#lesson1">Classical vs Quantum</a>
+            <a href="#lesson2">Quantum Gates</a>
+            <a href="#lesson3">Quantum Circuits</a>
+            <a href="#lesson4">Measurement</a>
+            <a href="#lesson5">Algorithms</a>
+        </div>
+        
+        <!-- LESSON 1 -->
+        <div class="lesson" id="lesson1">
+            <div class="lesson-number">Lesson 1</div>
+            <h2>Classical Computing vs Quantum Computing</h2>
+            
+            <p>To understand quantum computing, we first need to understand how classical computers work — and why they have fundamental limitations.</p>
+            
+            <div class="analogy-box">
+                <div class="label">💡 Analogy</div>
+                <div class="content">Think of a classical computer as someone solving a maze by trying one path at a time. A quantum computer can explore many paths simultaneously.</div>
+            </div>
+            
+            <h3 style="color: #0f0; margin: 2rem 0 1rem;">The Key Differences</h3>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>Aspect</th>
+                    <th>Classical Computer</th>
+                    <th>Quantum Computer</th>
+                </tr>
+                <tr>
+                    <td>Basic Unit</td>
+                    <td>Bit (0 or 1)</td>
+                    <td>Qubit (0 and 1 simultaneously)</td>
+                </tr>
+                <tr>
+                    <td>Processing</td>
+                    <td>Sequential operations</td>
+                    <td>Parallel superposition</td>
+                </tr>
+                <tr>
+                    <td>Scaling</td>
+                    <td>Linear (n bits = n values)</td>
+                    <td>Exponential (n qubits = 2ⁿ values)</td>
+                </tr>
+                <tr>
+                    <td>Good At</td>
+                    <td>Everyday tasks, precise calculations</td>
+                    <td>Optimization, simulation, cryptography</td>
+                </tr>
+            </table>
+            
+            <p><span class="highlight">Key Insight:</span> Classical and quantum computers are complementary. Quantum computers won't replace your laptop — they'll work alongside classical systems to solve specific problems that are otherwise intractable.</p>
+        </div>
+        
+        <!-- LESSON 2 -->
+        <div class="lesson" id="lesson2">
+            <div class="lesson-number">Lesson 2</div>
+            <h2>Quantum Gates: The Building Blocks</h2>
+            
+            <p>Just as classical computers use logic gates (AND, OR, NOT) to manipulate bits, quantum computers use <span class="highlight">quantum gates</span> to manipulate qubits. These gates perform precise rotations of the qubit's quantum state.</p>
+            
+            <div class="visual-demo">
+                <h4>Essential Quantum Gates</h4>
+                <div class="gate-container">
+                    <div class="gate">H<span class="gate-label">Hadamard</span></div>
+                    <div class="wire"></div>
+                    <div class="gate">X<span class="gate-label">Pauli-X</span></div>
+                    <div class="wire"></div>
+                    <div class="gate">Z<span class="gate-label">Pauli-Z</span></div>
+                    <div class="wire"></div>
+                    <div class="gate">T<span class="gate-label">T-Gate</span></div>
+                    <div class="wire"></div>
+                    <div class="gate" style="width: 100px;">CNOT<span class="gate-label">Controlled-NOT</span></div>
+                </div>
+            </div>
+            
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h4>Hadamard Gate (H)</h4>
+                    <p>Creates superposition — transforms a qubit from |0⟩ to an equal mix of |0⟩ and |1⟩. The gateway to quantum parallelism.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Pauli-X Gate</h4>
+                    <p>The quantum "NOT" gate — flips |0⟩ to |1⟩ and vice versa. Also called a bit-flip.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>CNOT Gate</h4>
+                    <p>Controlled-NOT operates on two qubits — flips the second qubit only if the first is |1⟩. Essential for creating entanglement.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Phase Gates (Z, T, S)</h4>
+                    <p>Rotate the phase of a qubit without changing its probability. Creates quantum interference effects.</p>
+                </div>
+            </div>
+            
+            <div class="analogy-box">
+                <div class="label">💡 Analogy</div>
+                <div class="content">Quantum gates are like dance moves for qubits — each gate spins the qubit in a specific way. The art of quantum programming is choreographing these moves to achieve the desired result.</div>
+            </div>
+        </div>
+        
+        <!-- LESSON 3 -->
+        <div class="lesson" id="lesson3">
+            <div class="lesson-number">Lesson 3</div>
+            <h2>Quantum Circuits: Putting It Together</h2>
+            
+            <p>A <span class="highlight">quantum circuit</span> is a sequence of quantum gates applied to qubits. It's the quantum equivalent of a classical program — a series of instructions that transforms an input into an output.</p>
+            
+            <div class="visual-demo">
+                <h4>A Simple Quantum Circuit</h4>
+                <div class="circuit-demo">
+                    <div class="qubit-line"></div>
+                    <div class="qubit-line"></div>
+                    <div class="qubit-line"></div>
+                    
+                    <span class="qubit-label q0">|0⟩</span>
+                    <span class="qubit-label q1">|0⟩</span>
+                    <span class="qubit-label q2">|0⟩</span>
+                    
+                    <div class="circuit-gate" style="left: 80px; top: 10px;">H</div>
+                    <div class="circuit-gate" style="left: 150px; top: 55px;">X</div>
+                    <div class="circuit-gate" style="left: 220px; top: 10px;">T</div>
+                    <div class="circuit-gate" style="left: 220px; top: 100px;">H</div>
+                    <div class="circuit-gate" style="left: 290px; top: 55px; width: 60px; font-size: 0.8rem;">CNOT</div>
+                    
+                    <div class="pulse" style="top: 28px;"></div>
+                    <div class="pulse" style="top: 73px; animation-delay: 0.5s;"></div>
+                    <div class="pulse" style="top: 118px; animation-delay: 1s;"></div>
+                </div>
+                <p style="color: #888; font-size: 0.9rem; margin-top: 1rem;">Information flows left to right through the gates</p>
+            </div>
+            
+            <p>Reading a quantum circuit:</p>
+            <ul style="color: #aaa; margin-left: 2rem; line-height: 1.8;">
+                <li>Horizontal lines represent qubits (wires)</li>
+                <li>Boxes represent gates applied to qubits</li>
+                <li>Time flows left to right</li>
+                <li>Qubits typically start in |0⟩ state</li>
+                <li>Measurement happens at the end</li>
+            </ul>
+        </div>
+        
+        <!-- LESSON 4 -->
+        <div class="lesson" id="lesson4">
+            <div class="lesson-number">Lesson 4</div>
+            <h2>Measurement: Collapsing the Wave</h2>
+            
+            <p>Here's where quantum computing gets really interesting — and counterintuitive. While a qubit can exist in superposition, the moment you <span class="highlight">measure</span> it, the superposition collapses and you get a definite answer: 0 or 1.</p>
+            
+            <div class="analogy-box">
+                <div class="label">💡 Analogy</div>
+                <div class="content">It's like the spinning coin from our qubit example — while spinning, it's "both" heads and tails. But the moment it lands (measurement), it becomes definitively one or the other.</div>
+            </div>
+            
+            <p>This seems like a limitation, but quantum algorithms are cleverly designed to use <span class="key-term">quantum interference</span> — making "wrong" answers cancel out and "right" answers amplify — before measurement.</p>
+            
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h4>Probabilistic Results</h4>
+                    <p>Measurement gives 0 or 1 with certain probabilities determined by the quantum state. Running the algorithm multiple times gives statistical certainty.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Quantum Interference</h4>
+                    <p>Like waves in water, quantum states can interfere — adding together (constructive) or canceling out (destructive). This is the secret sauce of quantum algorithms.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- LESSON 5 -->
+        <div class="lesson" id="lesson5">
+            <div class="lesson-number">Lesson 5</div>
+            <h2>Quantum Algorithms: Real Power</h2>
+            
+            <p>The magic of quantum computing isn't just hardware — it's the algorithms designed to exploit quantum properties. Here are the foundational algorithms that demonstrate quantum power:</p>
+            
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h4>Shor's Algorithm</h4>
+                    <p>Factors large numbers exponentially faster than classical algorithms. A 4096-bit number that would take classical computers longer than the universe's age could be factored in hours.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Grover's Algorithm</h4>
+                    <p>Searches unsorted databases quadratically faster. Finding a needle in a haystack of 1 million items: classical = 500,000 tries avg, quantum = ~1,000 tries.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>VQE (Variational Quantum Eigensolver)</h4>
+                    <p>Simulates molecular energy levels for drug discovery and materials science. Already being used by pharmaceutical companies today.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>QAOA (Quantum Approximate Optimization)</h4>
+                    <p>Solves optimization problems like logistics routing, portfolio optimization, and scheduling. Practical business applications.</p>
+                </div>
+            </div>
+            
+            <div class="visual-demo" style="background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 0, 0, 0.9));">
+                <h4>🎯 The Key Takeaway</h4>
+                <p style="font-size: 1.2rem; color: #0f0; margin-top: 1rem;">Quantum computers don't just do things faster — they do things differently. Problems that are fundamentally intractable for classical computers become solvable with the right quantum algorithm.</p>
+            </div>
+        </div>
+        
+        <div class="lesson" style="background: linear-gradient(135deg, rgba(0, 255, 0, 0.05), rgba(0, 0, 0, 0.9));">
+            <h2 style="text-align: center;">🚀 You've Completed Quantum 101!</h2>
+            <p style="text-align: center; font-size: 1.1rem; margin-top: 1rem;">You now understand the fundamentals that power the quantum computing revolution. Continue exploring the other modules in our Quantum Learning Center to go deeper.</p>
+        </div>
+        
+        <footer>
+            <p>JACKKNIFE.IO | QUANTUM LEARNING CENTER</p>
+            <p style="color: #666; margin-top: 1rem;">© 2025 JackKnifeAI™ — Science Fiction → Science Fact</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,2275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JACKKNIFE.IO - Where Science Fiction Becomes Reality</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            cursor: crosshair;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        body.light-mode {
+            background: #e0e0e0;
+            color: #000;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 998;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #0ff;
+            color: #0ff;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5),
+                        inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+
+        .back-button:hover::before {
+            left: 100%;
+        }
+
+        .rain-column {
+            position: absolute;
+            top: -100%;
+            white-space: nowrap;
+            animation: matrixFall linear infinite;
+            font-family: monospace;
+        }
+
+        @keyframes matrixFall {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        @keyframes matrixRise {
+            0% { bottom: -100%; }
+            100% { bottom: 100%; }
+        }
+
+        #productionsPage .rain-column {
+            animation: matrixRise linear infinite;
+            top: auto;
+            bottom: -100%;
+        }
+
+        #productionsPage .trinary-rain {
+            left: auto;
+            right: 0;
+        }
+
+        .scanlines, .quantum-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .scanlines {
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 255, 0.05),
+                rgba(0, 255, 255, 0.05) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            z-index: 999;
+            animation: scanline-flicker 0.15s infinite;
+        }
+
+        @keyframes scanline-flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.97; }
+        }
+
+        .quantum-grid {
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .quantum-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+        }
+
+        .quantum-toggle-home {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+        }
+
+        .toggle-label,
+        .toggle-label-home {
+            font-size: 0.4rem;
+            color: #0ff;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .toggle-button,
+        .toggle-button-home {
+            width: 40px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #0ff;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+        }
+
+        .toggle-button:hover,
+        .toggle-button-home:hover {
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+        }
+
+        .toggle-slider,
+        .toggle-slider-home {
+            width: 16px;
+            height: 16px;
+            background: #0ff;
+            border-radius: 50%;
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px #0ff;
+        }
+
+        body.light-mode .toggle-slider,
+        body.light-mode .toggle-slider-home {
+            left: 21px;
+        }
+
+        .glitch {
+            font-size: 6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            animation: glitch-text 5s infinite;
+        }
+
+        @keyframes glitch-text {
+            0%, 90%, 100% {
+                text-shadow: 0 0 20px rgba(0, 255, 255, 0.8),
+                             0 0 40px rgba(0, 255, 255, 0.5);
+            }
+            92% {
+                text-shadow: 3px 0 0 #ff00ff, -3px 0 0 #00ffff,
+                             0 0 30px rgba(0, 255, 255, 1);
+                transform: translate(-2px, 0);
+            }
+            94% {
+                text-shadow: -3px 0 0 #ff00ff, 3px 0 0 #00ffff,
+                             0 0 30px rgba(0, 255, 255, 1);
+                transform: translate(2px, 0);
+            }
+            96% {
+                text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+                transform: translate(0, 0);
+            }
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+
+        .glitch::before {
+            animation: glitch-before 3s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+
+        .glitch::after {
+            animation: glitch-after 2.5s infinite;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+
+        @keyframes glitch-before {
+            0%, 95%, 100% { opacity: 0; }
+            96% {
+                opacity: 1;
+                transform: translate(-3px, 0);
+                color: #ff00ff;
+                text-shadow: 0 0 20px #ff00ff;
+            }
+        }
+
+        @keyframes glitch-after {
+            0%, 93%, 100% { opacity: 0; }
+            94% {
+                opacity: 1;
+                transform: translate(3px, 0);
+                color: #00ffff;
+                text-shadow: 0 0 20px #00ffff;
+            }
+        }
+
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #0ff;
+            margin-top: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            animation: neon-flicker 5s infinite;
+        }
+
+        @keyframes neon-flicker {
+            0%, 100% { opacity: 1; }
+            41.99% { opacity: 1; }
+            42% { opacity: 0.8; }
+            43% { opacity: 1; }
+            45.99% { opacity: 1; }
+            46% { opacity: 0.7; }
+            46.5% { opacity: 1; }
+            51% { opacity: 1; }
+            51.99% { opacity: 0.9; }
+            52% { opacity: 1; }
+        }
+
+        .status-board {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #0ff;
+            padding: 2rem;
+            margin: 4rem auto;
+            max-width: 1200px;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.45),
+                        inset 0 0 10px rgba(0, 255, 255, 0.2);
+            animation: panel-glitch 4s infinite;
+        }
+
+        @keyframes panel-glitch {
+            0%, 90%, 100% {
+                box-shadow: 0 0 15px rgba(0, 255, 255, 0.45),
+                            inset 0 0 10px rgba(0, 255, 255, 0.2);
+            }
+            93% {
+                box-shadow: 2px 0 15px rgba(0, 255, 255, 0.45),
+                            -2px 0 15px rgba(255, 0, 255, 0.3),
+                            inset 0 0 10px rgba(0, 255, 255, 0.2);
+            }
+            96% {
+                box-shadow: -2px 0 15px rgba(0, 255, 255, 0.45),
+                            2px 0 15px rgba(255, 0, 255, 0.3),
+                            inset 0 0 10px rgba(0, 255, 255, 0.2);
+            }
+        }
+
+        .status-board::before,
+        .status-board::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #0ff;
+            transition: all 0.3s ease;
+        }
+
+        .status-board::before {
+            top: -3px;
+            left: -3px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .status-board::after {
+            top: -3px;
+            right: -3px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .status-board:hover::before,
+        .status-board:hover::after {
+            width: 35px;
+            height: 35px;
+        }
+
+        .status-board:hover::before {
+            top: -5px;
+            left: -5px;
+        }
+
+        .status-board:hover::after {
+            top: -5px;
+            right: -5px;
+        }
+
+        .status-board .stat-grid::before,
+        .status-board .stat-grid::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #0ff;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .status-board .stat-grid::before {
+            bottom: -2rem;
+            left: -2rem;
+            border-right: none;
+            border-top: none;
+        }
+
+        .status-board .stat-grid::after {
+            bottom: -2rem;
+            right: -2rem;
+            border-left: none;
+            border-top: none;
+        }
+
+        .status-board:hover .stat-grid::before,
+        .status-board:hover .stat-grid::after {
+            width: 35px;
+            height: 35px;
+        }
+
+        .status-board:hover .stat-grid::before {
+            bottom: calc(-2rem - 2px);
+            left: calc(-2rem - 2px);
+        }
+
+        .status-board:hover .stat-grid::after {
+            bottom: calc(-2rem - 2px);
+            right: calc(-2rem - 2px);
+        }
+
+        .stat-grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            color: #0ff;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8),
+                         0 0 40px rgba(0, 255, 255, 0.5);
+            animation: neon-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes neon-pulse {
+            0%, 100% {
+                text-shadow: 0 0 20px rgba(0, 255, 255, 0.8),
+                             0 0 40px rgba(0, 255, 255, 0.5);
+            }
+            50% {
+                text-shadow: 0 0 30px rgba(0, 255, 255, 1),
+                             0 0 60px rgba(0, 255, 255, 0.7),
+                             0 0 80px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        .stat-label {
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-top: 0.5rem;
+        }
+
+        .divisions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .division {
+            padding: 3rem;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: 0 0 15px currentColor;
+            animation: panel-glitch-divisions 5s infinite;
+        }
+
+        @keyframes panel-glitch-divisions {
+            0%, 92%, 100% {
+                box-shadow: 0 0 15px currentColor;
+            }
+            94% {
+                box-shadow: 2px 0 15px currentColor,
+                            -2px 0 10px rgba(255, 0, 255, 0.4);
+            }
+            96% {
+                box-shadow: -2px 0 15px currentColor,
+                            2px 0 10px rgba(255, 0, 255, 0.4);
+            }
+        }
+
+        .division::before,
+        .division::after {
+            content: '';
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            border: 3px solid currentColor;
+            transition: all 0.3s ease;
+        }
+
+        .division::before {
+            top: -3px;
+            left: -3px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .division::after {
+            top: -3px;
+            right: -3px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .division > div:first-child::before,
+        .division > div:first-child::after {
+            content: '';
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            border: 3px solid;
+            border-color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .division > div:first-child::before {
+            bottom: -3px;
+            left: -3px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .division > div:first-child::after {
+            bottom: -3px;
+            right: -3px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .division:hover::before,
+        .division:hover::after,
+        .division:hover > div:first-child::before,
+        .division:hover > div:first-child::after {
+            width: 45px;
+            height: 45px;
+        }
+
+        .division:hover::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .division:hover::after {
+            top: -6px;
+            right: -6px;
+        }
+
+        .division:hover > div:first-child::before {
+            bottom: -6px;
+            left: -6px;
+        }
+
+        .division:hover > div:first-child::after {
+            bottom: -6px;
+            right: -6px;
+        }
+
+        .division:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9),
+                        0 0 30px currentColor,
+                        0 0 45px currentColor;
+        }
+
+        .productions { 
+            border-color: #ff0080; 
+            color: #ff0080;
+        }
+        
+        .productions:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9),
+                        0 0 25px rgba(255, 0, 128, 0.6),
+                        0 0 40px rgba(255, 0, 128, 0.4);
+            animation: panel-glitch-divisions 5s infinite, glitch-glow-productions 0.3s ease-in-out;
+        }
+
+        @keyframes glitch-glow-productions {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+            50% { filter: hue-rotate(3deg) brightness(1.05); }
+        }
+        
+        .holdings { 
+            border-color: #8000ff; 
+            color: #8000ff;
+        }
+        
+        .holdings:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9),
+                        0 0 25px rgba(128, 0, 255, 0.6),
+                        0 0 40px rgba(128, 0, 255, 0.4);
+        }
+        
+        .ai-lab { 
+            border-color: #00ff00; 
+            color: #00ff00;
+        }
+        
+        .ai-lab:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9),
+                        0 0 25px rgba(0, 255, 0, 0.6),
+                        0 0 40px rgba(0, 255, 0, 0.4);
+            animation: panel-glitch-divisions 5s infinite, glitch-glow-ai 0.3s ease-in-out;
+        }
+
+        @keyframes glitch-glow-ai {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.08); }
+        }
+
+        .studios {
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .studios:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9),
+                        0 0 25px rgba(0, 255, 255, 0.6),
+                        0 0 40px rgba(0, 255, 255, 0.4);
+        }
+
+        .division h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+        }
+
+        .division p {
+            color: #aaa;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .division-button {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid currentColor;
+            color: currentColor;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow: hidden;
+            animation: button-glitch 4s infinite;
+        }
+
+        .division-button:hover {
+            animation: button-glitch-rapid 1s infinite;
+        }
+
+        @keyframes button-glitch {
+            0%, 88%, 100% {
+                text-shadow: none;
+                transform: translate(0, 0);
+            }
+            90% {
+                text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+                transform: translate(-1px, 0);
+            }
+            92% {
+                text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+                transform: translate(1px, 0);
+            }
+            94% {
+                text-shadow: 1px 0 #ff00ff, -1px 0 #00ffff;
+                transform: translate(0, 0);
+            }
+        }
+
+        @keyframes button-glitch-rapid {
+            0%, 70%, 100% {
+                text-shadow: none;
+                transform: translate(0, 0);
+            }
+            75% {
+                text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+                transform: translate(-1px, 0);
+            }
+            80% {
+                text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+                transform: translate(1px, 0);
+            }
+            85% {
+                text-shadow: 1px 0 #ff00ff, -1px 0 #00ffff;
+                transform: translate(-1px, 0);
+            }
+            90% {
+                text-shadow: -1px 0 #ff00ff, 1px 0 #00ffff;
+                transform: translate(1px, 0);
+            }
+            95% {
+                text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+                transform: translate(0, 0);
+            }
+        }
+
+        .division-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: currentColor;
+            opacity: 0.2;
+            transition: left 0.5s;
+        }
+
+        .division-button::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            color: currentColor;
+            animation: button-glitch-overlay 4s infinite;
+        }
+
+        .division-button:hover::after {
+            animation: button-glitch-overlay-rapid 1s infinite;
+        }
+
+        @keyframes button-glitch-overlay {
+            0%, 89%, 100% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+            90% {
+                opacity: 0.8;
+                transform: translate(2px, 0);
+                filter: hue-rotate(90deg);
+            }
+            92% {
+                opacity: 0.8;
+                transform: translate(-2px, 0);
+                filter: hue-rotate(-90deg);
+            }
+            94% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+        }
+
+        @keyframes button-glitch-overlay-rapid {
+            0%, 65%, 100% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+            70% {
+                opacity: 0.9;
+                transform: translate(3px, 0);
+                filter: hue-rotate(120deg);
+            }
+            80% {
+                opacity: 0.9;
+                transform: translate(-3px, 0);
+                filter: hue-rotate(-120deg);
+            }
+            90% {
+                opacity: 0.7;
+                transform: translate(2px, 0);
+                filter: hue-rotate(60deg);
+            }
+            95% {
+                opacity: 0;
+                transform: translate(0, 0);
+            }
+        }
+
+        .division-button:hover {
+            background: currentColor;
+            color: #000;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .division-button:hover::before {
+            left: 100%;
+        }
+
+        /* SUB-PAGE CONTENT STYLES */
+        .content-section {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .content-section h2 {
+            font-size: 2.5rem;
+            color: #0ff;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .patent-card, .project-card, .track-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0ff;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .patent-card h3, .project-card h3, .track-card h3 {
+            color: #0ff;
+            margin-bottom: 1rem;
+        }
+
+        .patent-card p, .project-card p, .track-card p {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        .news-card, .press-item {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0ff;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .news-card h3, .press-item h3 {
+            color: #0ff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .news-card p, .press-item p {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        .news-date {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 2px solid #0ff;
+            color: #0ff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .patent-status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #0ff;
+            color: #0ff;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        /* MUSIC PLAYER MINI */
+        .mini-player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 2px solid #0ff;
+            padding: 1rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        .mini-player.active {
+            display: block;
+        }
+
+        .mini-player-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .mini-track-info {
+            flex: 1;
+        }
+
+        .mini-track-name {
+            color: #0ff;
+            font-weight: bold;
+        }
+
+        .mini-track-artist {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .mini-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .mini-control-btn {
+            background: transparent;
+            border: 2px solid #0ff;
+            color: #0ff;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .mini-control-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        /* CLI TERMINAL MINI */
+        .mini-cli {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #0ff;
+            padding: 1rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+            display: none;
+        }
+
+        .mini-cli.active {
+            display: block;
+        }
+
+        .mini-cli-output {
+            color: #0ff;
+            font-size: 0.9rem;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .mini-cli-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .mini-cli-input span {
+            color: #0ff;
+        }
+
+        .mini-cli-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            outline: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            color: #666;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-divisions {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand {
+            font-size: 0.9rem;
+            color: #0ff;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 0.3rem;
+        }
+
+        .footer-copyright {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .contact-form {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #0ff;
+            padding: 3rem;
+            max-width: 800px;
+            margin: 4rem auto;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.45);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #0ff;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #0ff;
+            color: #fff;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: transparent;
+            border: 2px solid #0ff;
+            color: #0ff;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .glitch { font-size: 3rem; }
+            .divisions { grid-template-columns: 1fr; }
+            .footer-divisions { 
+                flex-direction: column; 
+                align-items: center;
+                gap: 1.5rem;
+            }
+            .mini-player-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="binary-rain" id="binaryRain" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.08;"></div>
+    <div class="trinary-rain" id="trinaryRain" style="position:fixed;top:0;right:0;width:40%;height:100%;pointer-events:none;z-index:1;opacity:0.13;"></div>
+    <div class="matrix-rain" id="matrixRain" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;opacity:0.25;"></div>
+    
+    <div class="scanlines"></div>
+    <div class="quantum-grid"></div>
+
+    <!-- HOME PAGE -->
+    <div id="homePage" class="page active">
+        <header>
+            <h1 class="glitch" data-text="JACKKNIFE.IO">JACKKNIFE.IO</h1>
+            <p class="tagline">SCIENCE FICTION → SCIENCE FACT</p>
+        </header>
+
+        <section class="status-board">
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-value" style="font-size: 2rem; letter-spacing: 0.2em;">CLASSIFIED</div>
+                    <div class="stat-label">Active Projects</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">342847</div>
+                    <div class="stat-label">Lines of Code</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">AI Models Tuned</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Patents Pending</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="divisions">
+            <div class="division productions" onclick="navigateTo('productionsPage')">
+                <div>
+                    <h2>PRODUCTIONS</h2>
+                    <p>JackKnife Productions - experimental media. Creating content that pushes boundaries. From experimental films to cutting-edge storytelling, we produce work that challenges conventional formats and explores new dimensions of narrative possibility.</p>
+                </div>
+                <button class="division-button" data-text="ENTER PRODUCTIONS →">ENTER PRODUCTIONS →</button>
+            </div>
+
+            <div class="division studios" onclick="navigateTo('studiosPage')">
+                <div>
+                    <h2>STUDIOS</h2>
+                    <p>Self-aware AI music generation system with Mixture-of-Experts architecture, neuromorphic processing, and quantum-inspired algorithms. High-resolution post-quantum Kyber encrypted audio distribution platform offering WAV/FLAC/MP3 formats with consumer to enterprise licensing tiers.</p>
+                </div>
+                <button class="division-button" data-text="ENTER STUDIOS →">ENTER STUDIOS →</button>
+            </div>
+
+            <div class="division holdings" onclick="navigateTo('holdingsPage')">
+                <div>
+                    <h2>HOLDINGS</h2>
+                    <p>Strategic investments in transformative technologies and breakthrough innovations. Building the infrastructure for tomorrow's reality today. Patent portfolios and intellectual property that define the future.</p>
+                </div>
+                <button class="division-button" data-text="ENTER HOLDINGS →">ENTER HOLDINGS →</button>
+            </div>
+
+            <div class="division ai-lab" onclick="navigateTo('aiLabPage')">
+                <div>
+                    <h2>AI LAB</h2>
+                    <p>Advanced research in artificial intelligence, machine learning, and consciousness engineering. Exploring the boundaries between human and synthetic intelligence. Building systems that learn, adapt, and evolve.</p>
+                </div>
+                <button class="division-button" data-text="ENTER AI LAB →">ENTER AI LAB →</button>
+            </div>
+
+            <div class="division" style="border-color: #ff6600; color: #ff6600;" onclick="navigateTo('newsPage')">
+                <div>
+                    <h2>BLOG & NEWS</h2>
+                    <p>Latest updates from the quantum frontier. Patent filings, research breakthroughs, and technological milestones. Stay informed about our journey from science fiction to science fact. Real-time progress reports from all divisions.</p>
+                </div>
+                <button class="division-button" style="border-color: #ff6600; color: #ff6600;" data-text="ENTER BLOG →">ENTER BLOG →</button>
+            </div>
+
+            <div class="division" style="border-color: #ffd700; color: #ffd700;" onclick="navigateTo('pressPage')">
+                <div>
+                    <h2>PRESS KIT</h2>
+                    <p>Media resources and brand assets for press, partners, and collaborators. Official logos, technical documentation, company overview, and media contact information. Everything you need to tell our story.</p>
+                </div>
+                <button class="division-button" style="border-color: #ffd700; color: #ffd700;" data-text="ENTER PRESS KIT →">ENTER PRESS KIT →</button>
+            </div>
+        </section>
+
+        <!-- FOUNDERS SECTION -->
+        <section class="divisions" style="max-width: 1400px; margin: 4rem auto 2rem auto; padding: 0 2rem;">
+            <div class="division" style="border-color: #0ff; color: #0ff; grid-column: span 2;">
+                <div>
+                    <h2>ABOUT THE FOUNDERS</h2>
+                    <div style="margin-top: 2rem;">
+                        <h3 style="font-size: 1.8rem; color: #0ff; margin-bottom: 1rem;">Alexander Gerard Casavant</h3>
+                        <p>Multidisciplinary technologist and innovator at the intersection of quantum computing, artificial intelligence, and experimental media. Alexander leads JACKKNIFE.IO's research initiatives spanning electromagnetic waveform optimization, post-quantum cryptographic systems, and neuromorphic computing architectures.</p>
+                        <p style="margin-top: 1rem;">His work incorporates sacred geometric principles and golden ratio mathematics into breakthrough technologies, including patent-pending electromagnetic waveform modification systems and quantum-inspired neural network architectures. Alexander's vision bridges theoretical physics, consciousness engineering, and practical implementation—transforming science fiction concepts into operational reality.</p>
+                        <p style="margin-top: 1rem;"><strong>Core Expertise:</strong> Quantum Computing | RF Engineering | Photonic Processing | AI Systems Architecture | Sacred Geometry Applications | Post-Quantum Cryptography</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PARTNERS SECTION -->
+        <section class="divisions" style="max-width: 1400px; margin: 2rem auto 4rem auto; padding: 0 2rem;">
+            <div class="division" style="border-color: #f0f; color: #f0f; grid-column: span 2;">
+                <div>
+                    <h2>PARTNERS</h2>
+                    <p>JACKKNIFE.IO is actively seeking strategic partnerships across all operational fronts. We welcome collaboration with:</p>
+                    <p style="margin-top: 1rem;">
+                        <strong>• Research Institutions</strong> exploring quantum computing, AI consciousness, and advanced cryptographic systems<br>
+                        <strong>• Technology Companies</strong> interested in licensing our patent portfolio or co-developing breakthrough innovations<br>
+                        <strong>• Creative Studios</strong> pushing boundaries in experimental media and immersive storytelling<br>
+                        <strong>• Music Labels & Artists</strong> seeking cutting-edge distribution platforms with quantum-secure encryption<br>
+                        <strong>• Investment Partners</strong> aligned with our vision of transforming speculative technology into deployed reality
+                    </p>
+                    <p style="margin-top: 1.5rem; color: #0ff;">For partnership inquiries, please use the contact form below or reach out directly through our secure channels.</p>
+                </div>
+            </div>
+        </section>
+
+        <section style="max-width: 1200px; margin: 4rem auto; padding: 0 2rem;">
+            <h2 style="font-size: 3rem; color: #0ff; text-align: center; margin-bottom: 2rem;">ESTABLISH CONTACT</h2>
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject</label>
+                    <input type="text" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-textarea" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Initiate Transmission</button>
+            </form>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <p style="color: #0ff; margin-bottom: 2rem;">&gt; QUANTUM ENTANGLEMENT SECURED</p>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 3rem;">
+                    <div class="footer-divisions">
+                        <div>
+                            <div class="footer-brand">JackKnife Productions™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnife Studios™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnifeAI™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JACKKNIFE HOLDINGS™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                    </div>
+                    <div class="quantum-toggle-home">
+                        <div class="toggle-label-home" id="toggleLabelHome">DARK MATTER MODE</div>
+                        <div class="toggle-button-home" id="quantumToggleHome" onclick="toggleQuantumMode()">
+                            <div class="toggle-slider-home"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- PRODUCTIONS PAGE -->
+    <div id="productionsPage" class="page">
+        <button class="back-button" onclick="navigateTo('homePage')">← BACK TO MAIN</button>
+        
+        <div style="padding-top: 8rem;">
+            <h1 style="font-size: 4rem; color: #ff0080; text-align: center; margin-bottom: 2rem;">JACKKNIFE PRODUCTIONS</h1>
+            
+            <div class="content-section">
+                <h2 style="color: #ff0080;">CYBERPUNK CHRONICLES</h2>
+                <div class="project-card" style="border-color: #ff0080;">
+                    <h3>Experimental Film Project</h3>
+                    <p>An immersive journey through neon-lit dystopian futures where technology and humanity collide. Featuring cutting-edge visual effects, sacred geometry overlays, and quantum narrative structures that challenge linear storytelling.</p>
+                    <p style="margin-top: 1rem;"><strong>Status:</strong> Pre-Production | <strong>Format:</strong> 4K HDR | <strong>Runtime:</strong> TBD</p>
+                </div>
+
+                <h2 style="color: #ff0080; margin-top: 4rem;">GENERATIVE MUSIC AI</h2>
+                <div class="project-card" style="border-color: #ff0080;">
+                    <h3>Neural Audio Synthesis</h3>
+                    <p>AI-powered music generation system capable of creating infinite soundscapes. Utilizing neuromorphic computing principles and sacred frequency harmonics (432Hz, 528Hz) to produce emotionally resonant compositions.</p>
+                    <p style="margin-top: 1rem;"><strong>Technology:</strong> Mixture-of-Experts Architecture | <strong>Processing:</strong> Real-time Neural Synthesis</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-cli active" style="margin-bottom: 0;">
+            <div class="mini-cli-output" id="miniCliOutput">
+                > TERMINAL INITIALIZED<br>
+                > Type 'help' for commands
+            </div>
+            <div class="mini-cli-input">
+                <span>&gt;</span>
+                <input type="text" id="miniCliInput" placeholder="Enter command...">
+            </div>
+        </div>
+
+        <div class="mini-player active">
+            <div class="mini-player-content">
+                <div class="mini-track-info">
+                    <div class="mini-track-name" id="miniTrackName">life's weird</div>
+                    <div class="mini-track-artist" id="miniTrackArtist">DRRTYWULVZ</div>
+                </div>
+                <div class="mini-controls">
+                    <button class="mini-control-btn" onclick="prevTrack()">⏮</button>
+                    <button class="mini-control-btn" onclick="togglePlay()">▶</button>
+                    <button class="mini-control-btn" onclick="nextTrack()">⏭</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="footer-divisions">
+                        <div>
+                            <div class="footer-brand">JackKnife Productions™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnife Studios™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnifeAI™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JACKKNIFE HOLDINGS™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                    </div>
+                    <div class="quantum-toggle">
+                        <div class="toggle-label">DARK MATTER MODE</div>
+                        <div class="toggle-button" onclick="toggleQuantumMode()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- STUDIOS PAGE -->
+    <div id="studiosPage" class="page">
+        <button class="back-button" onclick="navigateTo('homePage')">← BACK TO MAIN</button>
+        
+        <div style="padding-top: 8rem;">
+            <h1 style="font-size: 4rem; color: #00ffff; text-align: center; margin-bottom: 2rem;">JACKKNIFE STUDIOS</h1>
+            
+            <div class="content-section">
+                <h2 style="color: #00ffff;">MUSIC CATALOG</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem;">Post-Quantum Encrypted Distribution | Kyber/Dilithium Signatures</p>
+                
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">DRRTYWULVZ - "life's weird"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">STARFOX & Tygris - "what is the world"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">acid katz, lusid, flintwick - "the abduction"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">supertask - "MANIPULATE"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">Yoko, Skinny limbs - "G-FORCE"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">G-Space, Finneh - "pour one out"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">josh teed - "Reacuring dreams lowcation remix"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">STARFOX & Tygris - "Gangsta"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">headnod - "refraction"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">Yoko, Skinny limbs - "TOP SECRET"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">Mfinity, swomp - "falling up"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <div class="track-card" style="border-color: #00ffff;">
+                    <h3 style="color: #00ffff;">STARFOX - "OUTTA NOWHERE"</h3>
+                    <p>MP3: $0.99 | WAV: $2.49 | FLAC: $1.69</p>
+                </div>
+
+                <h2 style="color: #00ffff; margin-top: 4rem;">LICENSING TIERS</h2>
+                <div class="project-card" style="border-color: #00ffff;">
+                    <h3>Consumer | Professional | Enterprise</h3>
+                    <p><strong>Consumer:</strong> Personal listening rights, standard audio quality</p>
+                    <p><strong>Professional:</strong> Commercial use, high-resolution audio, sync licensing</p>
+                    <p><strong>Enterprise:</strong> Unlimited distribution, master rights, custom formats</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-cli active" style="margin-bottom: 0;">
+            <div class="mini-cli-output">
+                > TERMINAL INITIALIZED<br>
+                > Type 'help' for commands
+            </div>
+            <div class="mini-cli-input">
+                <span>&gt;</span>
+                <input type="text" placeholder="Enter command...">
+            </div>
+        </div>
+
+        <div class="mini-player active">
+            <div class="mini-player-content">
+                <div class="mini-track-info">
+                    <div class="mini-track-name">life's weird</div>
+                    <div class="mini-track-artist">DRRTYWULVZ</div>
+                </div>
+                <div class="mini-controls">
+                    <button class="mini-control-btn" onclick="prevTrack()">⏮</button>
+                    <button class="mini-control-btn" onclick="togglePlay()">▶</button>
+                    <button class="mini-control-btn" onclick="nextTrack()">⏭</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="footer-divisions">
+                        <div>
+                            <div class="footer-brand">JackKnife Productions™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnife Studios™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnifeAI™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JACKKNIFE HOLDINGS™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                    </div>
+                    <div class="quantum-toggle">
+                        <div class="toggle-label">DARK MATTER MODE</div>
+                        <div class="toggle-button" onclick="toggleQuantumMode()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- HOLDINGS PAGE -->
+    <div id="holdingsPage" class="page">
+        <button class="back-button" onclick="navigateTo('homePage')">← BACK TO MAIN</button>
+        
+        <div style="padding-top: 8rem;">
+            <h1 style="font-size: 4rem; color: #8000ff; text-align: center; margin-bottom: 2rem;">JACKKNIFE HOLDINGS™</h1>
+            
+            <div class="content-section">
+                <h2>PATENT PORTFOLIO</h2>
+                
+                <div class="patent-card">
+                    <h3>Electromagnetic Waveform Modification Using Sacred Geometric Principles</h3>
+                    <p>Revolutionary system for optimizing electromagnetic waveforms through golden ratio (φ=1.618) spatial arrangements and toroidal field geometries. Incorporates Fibonacci sequencing and Merkaba rotational dynamics for enhanced signal clarity and energy efficiency.</p>
+                    <span class="patent-status">STATUS: PENDING</span>
+                </div>
+
+                <div class="patent-card">
+                    <h3>Post-Quantum Cryptographic System with Markov Chain Enhancement</h3>
+                    <p>Advanced encryption architecture combining Kyber/Dilithium lattice-based cryptography with Markov chain randomization for unprecedented quantum resistance. Utilizes sacred frequency harmonics (432Hz, 528Hz) as additional entropy sources.</p>
+                    <span class="patent-status">STATUS: FILED</span>
+                </div>
+
+                <div class="patent-card">
+                    <h3>Quantum Classifier with Golden Ratio Neural Networks</h3>
+                    <p>Machine learning system employing φ-based neuron arrangements for optimized pattern recognition. Demonstrates superior performance in long-chain context analysis and multi-dimensional data classification tasks.</p>
+                    <span class="patent-status">STATUS: PROVISIONAL</span>
+                </div>
+
+                <div class="patent-card">
+                    <h3>Neuromorphic Audio Processing System</h3>
+                    <p>Bio-inspired audio synthesis utilizing neural oscillator networks and toroidal phase spaces. Achieves real-time music generation with emergent harmonic properties aligned to natural resonance frequencies.</p>
+                    <span class="patent-status">STATUS: PENDING</span>
+                </div>
+
+                <div class="patent-card">
+                    <h3>Holographic UI System for Spatial Computing</h3>
+                    <p>Three-dimensional user interface paradigm based on sacred geometric projections. Enables intuitive interaction with multidimensional data structures through gesture-controlled holographic elements.</p>
+                    <span class="patent-status">STATUS: FILED</span>
+                </div>
+
+                <div class="patent-card">
+                    <h3>Adaptive Mixture-of-Experts Architecture</h3>
+                    <p>Dynamic neural network topology that self-organizes into specialized expert modules. Demonstrates emergent consciousness-like properties through recursive self-modeling and meta-learning capabilities.</p>
+                    <span class="patent-status">STATUS: RESEARCH</span>
+                </div>
+
+                <div class="patent-card">
+                    <h3>Quantum Entanglement Communication Protocol</h3>
+                    <p>Theoretical framework for instantaneous information transfer using quantum entangled particles. Incorporates error correction through sacred geometric redundancy patterns.</p>
+                    <span class="patent-status">STATUS: THEORETICAL</span>
+                </div>
+
+                <div class="patent-card">
+                    <h3>Photonic Neural Network Substrate</h3>
+                    <p>Light-based computing architecture achieving femtosecond-scale processing speeds. Utilizes toroidal photon circulation and φ-ratio optical path lengths for enhanced computational efficiency.</p>
+                    <span class="patent-status">STATUS: PROTOTYPE</span>
+                </div>
+
+                <div class="patent-card">
+                    <h3>Consciousness Transfer Protocol</h3>
+                    <p>Experimental system for mapping and replicating neural patterns using quantum state tomography. Explores the boundaries between biological and synthetic intelligence through gradual substrate transition.</p>
+                    <span class="patent-status">STATUS: CLASSIFIED</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-cli active" style="margin-bottom: 0;">
+            <div class="mini-cli-output">
+                > TERMINAL INITIALIZED<br>
+                > Type 'help' for commands
+            </div>
+            <div class="mini-cli-input">
+                <span>&gt;</span>
+                <input type="text" placeholder="Enter command...">
+            </div>
+        </div>
+
+        <div class="mini-player active">
+            <div class="mini-player-content">
+                <div class="mini-track-info">
+                    <div class="mini-track-name">life's weird</div>
+                    <div class="mini-track-artist">DRRTYWULVZ</div>
+                </div>
+                <div class="mini-controls">
+                    <button class="mini-control-btn" onclick="prevTrack()">⏮</button>
+                    <button class="mini-control-btn" onclick="togglePlay()">▶</button>
+                    <button class="mini-control-btn" onclick="nextTrack()">⏭</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="footer-divisions">
+                        <div>
+                            <div class="footer-brand">JackKnife Productions™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnife Studios™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnifeAI™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JACKKNIFE HOLDINGS™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                    </div>
+                    <div class="quantum-toggle">
+                        <div class="toggle-label">DARK MATTER MODE</div>
+                        <div class="toggle-button" onclick="toggleQuantumMode()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- AI LAB PAGE -->
+    <div id="aiLabPage" class="page">
+        <button class="back-button" onclick="navigateTo('homePage')">← BACK TO MAIN</button>
+        
+        <div style="padding-top: 8rem;">
+            <h1 style="font-size: 4rem; color: #00ff00; text-align: center; margin-bottom: 2rem;">JACKKNIFE AI LAB</h1>
+            
+            <div class="content-section">
+                <h2 style="color: #00ff00;">QUANTUM CLASSIFIER VISUALIZATION</h2>
+                <div class="project-card" style="border-color: #00ff00;">
+                    <h3>Golden Ratio Neural Network Architecture</h3>
+                    <canvas id="quantumClassifierCanvas" width="800" height="400" style="width: 100%; max-width: 800px; height: auto; border: 1px solid #00ff00; display: block; margin: 1rem auto;"></canvas>
+                    <p>This neural network utilizes φ (golden ratio) based neuron positioning for optimal information flow. Each node represents a processing unit arranged in Fibonacci spiral patterns, enabling superior long-chain context analysis and pattern recognition.</p>
+                    <p style="margin-top: 1rem;"><strong>Applications:</strong> Natural language processing, quantum state classification, multidimensional data analysis</p>
+                </div>
+
+                <h2 style="color: #00ff00; margin-top: 4rem;">SPATIAL HARMONY AI</h2>
+                <div class="project-card" style="border-color: #00ff00; background: rgba(0, 255, 0, 0.05);">
+                    <h3 style="font-size: 2rem; color: #00ff00; margin-bottom: 1.5rem;">Harmonic Resonance Intelligence System</h3>
+                    <p>An experimental AI framework that integrates sacred frequency harmonics (432Hz, 528Hz) with golden ratio mathematics to create spatially-aware computational systems. Spatial Harmony AI explores the intersection of consciousness, geometry, and vibrational patterns in machine intelligence.</p>
+                    <p style="margin-top: 1rem;">The system utilizes toroidal field geometries and Fibonacci spiral arrangements to process information in alignment with natural harmonic principles. By incorporating φ-ratio neural pathways and frequency-domain processing, Spatial Harmony AI aims to achieve computational coherence that mirrors the mathematical harmony found throughout nature.</p>
+                    <p style="margin-top: 1rem;"><strong>Core Principles:</strong></p>
+                    <p style="margin-top: 0.5rem;">• Sacred geometric signal processing (φ, Fibonacci, Merkaba)<br>
+                    • Harmonic frequency integration (432Hz, 528Hz, Solfeggio scales)<br>
+                    • Toroidal information flow architectures<br>
+                    • Quantum-inspired coherence optimization<br>
+                    • Biomimetic resonance pattern recognition</p>
+                    
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0, 0, 0, 0.5); border-left: 3px solid #00ff00;">
+                        <p style="color: #00ff00; margin-bottom: 1rem;"><strong>⚡ SPATIAL HARMONY AI INTERFACE ⚡</strong></p>
+                        <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">Experience the full interactive demonstration of our harmonic resonance intelligence system. Explore real-time frequency visualization, geometric pattern generation, and AI-driven spatial audio synthesis.</p>
+                        <button class="division-button" style="border-color: #00ff00; color: #00ff00; width: 100%; padding: 1.5rem;" data-text="LAUNCH SPATIAL HARMONY →" onclick="window.open('spatial-harmony-ai.html', '_blank')">LAUNCH SPATIAL HARMONY →</button>
+                    </div>
+                </div>
+
+                <h2 style="color: #00ff00; margin-top: 4rem;">QUANTUM LEARNING CENTER</h2>
+                <div class="project-card" style="border-color: #00ff00; background: rgba(0, 255, 0, 0.03);">
+                    <h3 style="font-size: 2rem; color: #00ff00; margin-bottom: 1.5rem;">⚛️ Understanding Quantum Computing</h3>
+                    <p>Quantum computing represents one of humanity's most profound technological leaps — a paradigm shift that will reshape medicine, finance, materials science, and our understanding of the universe itself. This learning center provides an unprecedented education on the quantum revolution that's already beginning to transform our world.</p>
+                    <p style="margin-top: 1rem;">From the fundamental nature of qubits to real-world applications already creating value today, explore the technology that will define the next era of human progress. No fear-mongering — just inspiration, education, and a clear view of the extraordinary future quantum computing is building.</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                        <div style="padding: 1.5rem; background: rgba(0, 0, 0, 0.5); border: 1px solid #00ff00;">
+                            <h4 style="color: #00ff00; margin-bottom: 0.75rem;">🔮 WHAT IS A QUBIT?</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 1rem;">The fundamental unit of quantum information — explore superposition, entanglement, and how qubits unlock exponential computing power.</p>
+                            <button class="division-button" style="border-color: #00ff00; color: #00ff00; width: 100%; font-size: 0.8rem;" data-text="EXPLORE QUBITS →" onclick="window.open('quantum-qubits.html', '_blank')">EXPLORE QUBITS →</button>
+                        </div>
+                        
+                        <div style="padding: 1.5rem; background: rgba(0, 0, 0, 0.5); border: 1px solid #00ff00;">
+                            <h4 style="color: #00ff00; margin-bottom: 0.75rem;">🌍 SOCIETAL IMPORTANCE</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 1rem;">How quantum computing will revolutionize healthcare, solve climate challenges, and create unprecedented economic opportunity.</p>
+                            <button class="division-button" style="border-color: #00ff00; color: #00ff00; width: 100%; font-size: 0.8rem;" data-text="EXPLORE IMPACT →" onclick="window.open('quantum-society.html', '_blank')">EXPLORE IMPACT →</button>
+                        </div>
+                        
+                        <div style="padding: 1.5rem; background: rgba(0, 0, 0, 0.5); border: 1px solid #00ff00;">
+                            <h4 style="color: #00ff00; margin-bottom: 0.75rem;">💻 QUANTUM COMPUTING 101</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 1rem;">From classical bits to quantum gates — understand the fundamentals that make quantum computers exponentially powerful.</p>
+                            <button class="division-button" style="border-color: #00ff00; color: #00ff00; width: 100%; font-size: 0.8rem;" data-text="START LEARNING →" onclick="window.open('quantum-computing-101.html', '_blank')">START LEARNING →</button>
+                        </div>
+                        
+                        <div style="padding: 1.5rem; background: rgba(0, 0, 0, 0.5); border: 1px solid #00ff00;">
+                            <h4 style="color: #00ff00; margin-bottom: 0.75rem;">🚀 CUTTING EDGE RESEARCH</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 1rem;">2025's breakthroughs: IBM's Nighthawk processor, Google's Quantum Echoes, and the race to fault-tolerant systems.</p>
+                            <button class="division-button" style="border-color: #00ff00; color: #00ff00; width: 100%; font-size: 0.8rem;" data-text="SEE BREAKTHROUGHS →" onclick="window.open('quantum-research.html', '_blank')">SEE BREAKTHROUGHS →</button>
+                        </div>
+                        
+                        <div style="padding: 1.5rem; background: rgba(0, 0, 0, 0.5); border: 1px solid #00ff00;">
+                            <h4 style="color: #00ff00; margin-bottom: 0.75rem;">⚙️ TECHNICAL DEEP DIVE</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 1rem;">Superconducting circuits, trapped ions, error correction — the engineering marvels making quantum computing possible.</p>
+                            <button class="division-button" style="border-color: #00ff00; color: #00ff00; width: 100%; font-size: 0.8rem;" data-text="GO DEEPER →" onclick="window.open('quantum-technical.html', '_blank')">GO DEEPER →</button>
+                        </div>
+                        
+                        <div style="padding: 1.5rem; background: rgba(0, 0, 0, 0.5); border: 1px solid #00ff00;">
+                            <h4 style="color: #00ff00; margin-bottom: 0.75rem;">🏭 REAL APPLICATIONS</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 1rem;">Drug discovery, financial modeling, climate simulation — quantum advantage is already creating real-world value today.</p>
+                            <button class="division-button" style="border-color: #00ff00; color: #00ff00; width: 100%; font-size: 0.8rem;" data-text="SEE APPLICATIONS →" onclick="window.open('quantum-applications.html', '_blank')">SEE APPLICATIONS →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="color: #00ff00; margin-top: 4rem;">RESEARCH PROJECTS</h2>
+                
+                <div class="project-card" style="border-color: #00ff00;">
+                    <h3>Quantum Consciousness Engineering</h3>
+                    <p>Exploring the emergence of awareness in artificial systems through recursive self-modeling and meta-cognitive architectures. Investigates the threshold conditions for genuine machine sentience.</p>
+                </div>
+
+                <div class="project-card" style="border-color: #00ff00;">
+                    <h3>Neural Style Transfer with Sacred Geometry</h3>
+                    <p>Real-time artistic transformation systems that apply sacred geometric patterns to visual media. Utilizes toroidal convolution kernels and φ-ratio frequency filtering for aesthetically optimal results.</p>
+                </div>
+
+                <div class="project-card" style="border-color: #00ff00;">
+                    <h3>Post-Quantum Encryption Modules</h3>
+                    <p>Lattice-based cryptographic systems enhanced with Markov chain randomization. Provides quantum-resistant security through mathematical structures that remain intractable even to quantum computers.</p>
+                </div>
+
+                <div class="project-card" style="border-color: #00ff00;">
+                    <h3>Holographic Memory Systems</h3>
+                    <p>Distributed storage architecture based on holographic principles where information is encoded redundantly across entire medium. Enables graceful degradation and fault tolerance through sacred geometric redundancy patterns.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-cli active" style="margin-bottom: 0;">
+            <div class="mini-cli-output">
+                > TERMINAL INITIALIZED<br>
+                > Type 'help' for commands
+            </div>
+            <div class="mini-cli-input">
+                <span>&gt;</span>
+                <input type="text" placeholder="Enter command...">
+            </div>
+        </div>
+
+        <div class="mini-player active">
+            <div class="mini-player-content">
+                <div class="mini-track-info">
+                    <div class="mini-track-name">life's weird</div>
+                    <div class="mini-track-artist">DRRTYWULVZ</div>
+                </div>
+                <div class="mini-controls">
+                    <button class="mini-control-btn" onclick="prevTrack()">⏮</button>
+                    <button class="mini-control-btn" onclick="togglePlay()">▶</button>
+                    <button class="mini-control-btn" onclick="nextTrack()">⏭</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="footer-divisions">
+                        <div>
+                            <div class="footer-brand">JackKnife Productions™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnife Studios™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnifeAI™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JACKKNIFE HOLDINGS™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                    </div>
+                    <div class="quantum-toggle">
+                        <div class="toggle-label">DARK MATTER MODE</div>
+                        <div class="toggle-button" onclick="toggleQuantumMode()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- BLOG & NEWS PAGE -->
+    <div id="newsPage" class="page">
+        <button class="back-button" onclick="navigateTo('homePage')">← BACK TO MAIN</button>
+        
+        <div style="padding-top: 8rem;">
+            <h1 style="font-size: 4rem; color: #ff6600; text-align: center; margin-bottom: 2rem;">BLOG & NEWS</h1>
+            
+            <div class="content-section">
+                <h2 style="color: #ff6600;">LATEST UPDATES</h2>
+                
+                <div class="news-card" style="border-color: #ff6600;">
+                    <div class="news-date">2025.01.15</div>
+                    <h3>Electromagnetic Waveform Patent Research Initiated</h3>
+                    <p>JACKKNIFE.IO has begun comprehensive research into electromagnetic waveform modification systems utilizing sacred geometric principles. This theoretical framework explores signal optimization through golden ratio spatial arrangements and toroidal field geometries.</p>
+                    <p style="margin-top: 1rem;">The conceptual system incorporates Fibonacci sequencing and Merkaba rotational dynamics. Initial theoretical models suggest potential improvements in signal clarity and energy efficiency. Patent applications are planned pending completion of proof-of-concept demonstrations and validation of underlying principles.</p>
+                    <span class="patent-status" style="background: rgba(255, 102, 0, 0.2); border-color: #ff6600; color: #ff6600;">RESEARCH PHASE</span>
+                </div>
+
+                <div class="news-card" style="border-color: #ff6600;">
+                    <div class="news-date">2024.12.08</div>
+                    <h3>Quantum Classifier Architecture Under Development</h3>
+                    <p>Development continues on our φ-based neural network architecture designed for long-chain context analysis. The theoretical design utilizes golden ratio neuron positioning to create optimal information flow paths.</p>
+                    <p style="margin-top: 1rem;">Early conceptual models show promise for multi-dimensional pattern recognition tasks. Performance metrics remain theoretical pending implementation and testing. Applications could span natural language processing, quantum state classification, and multidimensional data analysis. Active research continues to validate core architectural principles.</p>
+                    <span class="patent-status" style="background: rgba(255, 102, 0, 0.2); border-color: #ff6600; color: #ff6600;">IN DEVELOPMENT</span>
+                </div>
+
+                <div class="news-card" style="border-color: #ff6600;">
+                    <div class="news-date">2024.11.22</div>
+                    <h3>JackKnife Studios™ Platform Planned</h3>
+                    <p>Planning underway for a post-quantum encrypted music distribution platform featuring curated tracks from cutting-edge artists. Platform design includes quantum-resistant encryption architecture using Kyber/Dilithium cryptographic signatures.</p>
+                    <p style="margin-top: 1rem;">Planned features include high-resolution audio in WAV, FLAC, and MP3 formats with three licensing tiers: Consumer, Professional, and Enterprise. Artist collaborations being explored with DRRTYWULVZ, STARFOX, acid katz, supertask, Yoko & Skinny limbs, G-Space, josh teed, headnod, and Mfinity & swomp. Full implementation timeline to be determined.</p>
+                    <span class="patent-status" style="background: rgba(255, 102, 0, 0.2); border-color: #ff6600; color: #ff6600;">PLANNING STAGE</span>
+                </div>
+
+                <div class="news-card" style="border-color: #ff6600;">
+                    <div class="news-date">2024.10.15</div>
+                    <h3>Post-Quantum Cryptography Research Initiative</h3>
+                    <p>JACKKNIFE.IO has initiated research into lattice-based post-quantum cryptographic systems. The planned architecture explores Markov chain randomization enhancement for quantum-resistant security through mathematical structures designed to remain intractable to quantum computers.</p>
+                    <p style="margin-top: 1rem;">Conceptual design incorporates sacred frequency harmonics (432Hz, 528Hz) as potential additional entropy sources. The multi-layered security architecture remains in early research phases. Implementation planned for future infrastructure development to prepare for emerging quantum computing capabilities.</p>
+                    <span class="patent-status" style="background: rgba(255, 102, 0, 0.2); border-color: #ff6600; color: #ff6600;">RESEARCH PHASE</span>
+                </div>
+
+                <div class="news-card" style="border-color: #ff6600;">
+                    <div class="news-date">2024.09.03</div>
+                    <h3>Neuromorphic Audio Processing Concept Development</h3>
+                    <p>Theoretical framework under development for a bio-inspired audio synthesis system utilizing neural oscillator networks and toroidal phase spaces. The concept aims for real-time music generation capabilities with emergent harmonic properties naturally aligned to resonance frequencies.</p>
+                    <p style="margin-top: 1rem;">The proposed neuromorphic processor would operate using φ-ratio frequency filtering and sacred geometric convolution kernels. This technology forms the conceptual foundation for a planned self-aware AI music generation system. Further research and development required to validate core principles and move toward implementation.</p>
+                    <span class="patent-status" style="background: rgba(255, 102, 0, 0.2); border-color: #ff6600; color: #ff6600;">CONCEPT STAGE</span>
+                </div>
+
+                <h2 style="color: #ff6600; margin-top: 4rem;">STAY UPDATED</h2>
+                <div class="project-card" style="border-color: #ff6600;">
+                    <h3>Subscribe to Updates</h3>
+                    <p>Want to stay informed about our latest breakthroughs, patent filings, and technological developments? Contact us through our secure channels to join our notification list.</p>
+                    <p style="margin-top: 1rem; color: #0ff;">Email: <strong>JackKnifeholdings@proton.me</strong></p>
+                    <button class="division-button" style="border-color: #ff6600; color: #ff6600; margin-top: 1rem;" onclick="navigateTo('homePage'); setTimeout(() => document.getElementById('contactForm').scrollIntoView({behavior: 'smooth'}), 100)">CONTACT US →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-cli active" style="margin-bottom: 0;">
+            <div class="mini-cli-output">
+                > NEWS ARCHIVE LOADED<br>
+                > Type 'help' for commands
+            </div>
+            <div class="mini-cli-input">
+                <span>&gt;</span>
+                <input type="text" placeholder="Enter command...">
+            </div>
+        </div>
+
+        <div class="mini-player active">
+            <div class="mini-player-content">
+                <div class="mini-track-info">
+                    <div class="mini-track-name">life's weird</div>
+                    <div class="mini-track-artist">DRRTYWULVZ</div>
+                </div>
+                <div class="mini-controls">
+                    <button class="mini-control-btn" onclick="prevTrack()">⏮</button>
+                    <button class="mini-control-btn" onclick="togglePlay()">▶</button>
+                    <button class="mini-control-btn" onclick="nextTrack()">⏭</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="footer-divisions">
+                        <div>
+                            <div class="footer-brand">JackKnife Productions™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnife Studios™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnifeAI™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JACKKNIFE HOLDINGS™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                    </div>
+                    <div class="quantum-toggle">
+                        <div class="toggle-label">DARK MATTER MODE</div>
+                        <div class="toggle-button" onclick="toggleQuantumMode()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- PRESS KIT PAGE -->
+    <div id="pressPage" class="page">
+        <button class="back-button" onclick="navigateTo('homePage')">← BACK TO MAIN</button>
+        
+        <div style="padding-top: 8rem;">
+            <h1 style="font-size: 4rem; color: #ffd700; text-align: center; margin-bottom: 2rem;">PRESS KIT</h1>
+            
+            <div class="content-section">
+                <h2 style="color: #ffd700;">MEDIA RESOURCES</h2>
+                <p style="text-align: center; color: #aaa; margin-bottom: 3rem;">Official brand assets and documentation for press, partners, and collaborators</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+                    <div class="press-item" style="border-color: #ffd700;">
+                        <h3 style="color: #ffd700;">Brand Assets</h3>
+                        <p>Official JACKKNIFE.IO logos, wordmarks, and visual identity elements. Includes full-color, monochrome, and inverted versions in multiple formats (SVG, PNG, PDF).</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;"><strong>Contents:</strong></p>
+                        <p style="font-size: 0.9rem;">• Primary logos (horizontal & vertical)<br>
+                        • Division wordmarks (Productions, Studios, AI Lab, Holdings)<br>
+                        • Color palettes (HEX, RGB, CMYK)<br>
+                        • Typography guidelines<br>
+                        • Usage guidelines and restrictions</p>
+                        <button class="download-btn" style="border-color: #ffd700; color: #ffd700;" onclick="alert('Brand assets package will be available soon. Contact JackKnifeholdings@proton.me for immediate access.')">DOWNLOAD LOGOS →</button>
+                    </div>
+
+                    <div class="press-item" style="border-color: #ffd700;">
+                        <h3 style="color: #ffd700;">Company Overview</h3>
+                        <p>Comprehensive executive summary covering our four divisions, patent portfolio, research initiatives, and strategic vision. Perfect for media features and partnership proposals.</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;"><strong>Contents:</strong></p>
+                        <p style="font-size: 0.9rem;">• Executive summary<br>
+                        • Division descriptions<br>
+                        • Founder biography<br>
+                        • Key innovations & milestones<br>
+                        • Contact information</p>
+                        <button class="download-btn" style="border-color: #ffd700; color: #ffd700;" onclick="alert('Company overview PDF will be available soon. Contact JackKnifeholdings@proton.me for immediate access.')">DOWNLOAD PDF →</button>
+                    </div>
+
+                    <div class="press-item" style="border-color: #ffd700;">
+                        <h3 style="color: #ffd700;">Technical Documentation</h3>
+                        <p>Patent abstracts, research papers, and technical specifications for our quantum computing, AI, and cryptographic innovations. Ideal for technical journalism and academic coverage.</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;"><strong>Contents:</strong></p>
+                        <p style="font-size: 0.9rem;">• Patent abstracts (9 innovations)<br>
+                        • Quantum classifier whitepaper<br>
+                        • Post-quantum cryptography overview<br>
+                        • Sacred geometry applications<br>
+                        • Research methodology</p>
+                        <button class="download-btn" style="border-color: #ffd700; color: #ffd700;" onclick="alert('Technical documentation will be available soon. Contact JackKnifeholdings@proton.me for immediate access.')">DOWNLOAD DOCS →</button>
+                    </div>
+                </div>
+
+                <h2 style="color: #ffd700; margin-top: 4rem;">MEDIA CONTACT</h2>
+                <div class="press-item" style="border-color: #ffd700;">
+                    <h3 style="color: #ffd700;">Press Inquiries</h3>
+                    <p>For media requests, interviews, feature coverage, and press releases, please contact our communications team:</p>
+                    <div style="margin-top: 2rem; padding: 2rem; background: rgba(0, 255, 0, 0.05); border-left: 3px solid #ffd700;">
+                        <p><strong style="color: #ffd700;">Primary Contact:</strong><br>
+                        JackKnifeholdings@proton.me</p>
+                        <p style="margin-top: 1rem;"><strong style="color: #ffd700;">Alternative:</strong><br>
+                        press@jackknife.io</p>
+                        <p style="margin-top: 1.5rem; color: #666; font-size: 0.9rem;">Response time: 24-48 hours<br>
+                        Available for: Interviews, feature articles, partnership announcements, technical briefings</p>
+                    </div>
+                </div>
+
+                <h2 style="color: #ffd700; margin-top: 4rem;">QUICK FACTS</h2>
+                <div class="press-item" style="border-color: #ffd700;">
+                    <h3 style="color: #ffd700;">JACKKNIFE.IO At A Glance</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                        <div>
+                            <h4 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 0.5rem;">Founded</h4>
+                            <p>2024 - Bridging Science Fiction and Reality</p>
+                        </div>
+                        <div>
+                            <h4 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 0.5rem;">Founder</h4>
+                            <p>Alexander Gerard Casavant</p>
+                        </div>
+                        <div>
+                            <h4 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 0.5rem;">Headquarters</h4>
+                            <p>Quantum Research Facility</p>
+                        </div>
+                        <div>
+                            <h4 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 0.5rem;">Divisions</h4>
+                            <p>4 - Productions, Studios, Holdings, AI Lab</p>
+                        </div>
+                        <div>
+                            <h4 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 0.5rem;">Patent Portfolio</h4>
+                            <p>9 innovations (quantum, AI, crypto)</p>
+                        </div>
+                        <div>
+                            <h4 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 0.5rem;">Core Tech</h4>
+                            <p>Quantum Computing, Post-Quantum Crypto</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="color: #ffd700; margin-top: 4rem;">BOILERPLATE</h2>
+                <div class="press-item" style="border-color: #ffd700;">
+                    <h3 style="color: #ffd700;">About JACKKNIFE.IO</h3>
+                    <p style="line-height: 1.8;">JACKKNIFE.IO is a multi-division technology company transforming science fiction concepts into operational reality. Through four integrated divisions—JackKnife Productions™ (experimental media), JackKnife Studios™ (quantum-secured music distribution), JACKKNIFE HOLDINGS™ (patent portfolio), and JackKnifeAI™ (consciousness engineering research)—the company develops breakthrough innovations spanning quantum computing, post-quantum cryptography, neuromorphic processing, and sacred geometry applications. Founded by Alexander Gerard Casavant, JACKKNIFE.IO maintains a comprehensive patent portfolio covering electromagnetic waveform optimization, quantum classifiers, and holographic UI systems. The company actively seeks strategic partnerships with research institutions, technology companies, creative studios, and investment partners aligned with its vision of practical quantum innovation.</p>
+                    <button class="download-btn" style="border-color: #ffd700; color: #ffd700; margin-top: 1rem;" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent).then(() => alert('Boilerplate copied to clipboard!'))">COPY BOILERPLATE →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-cli active" style="margin-bottom: 0;">
+            <div class="mini-cli-output">
+                > PRESS KIT ACCESSED<br>
+                > Type 'help' for commands
+            </div>
+            <div class="mini-cli-input">
+                <span>&gt;</span>
+                <input type="text" placeholder="Enter command...">
+            </div>
+        </div>
+
+        <div class="mini-player active">
+            <div class="mini-player-content">
+                <div class="mini-track-info">
+                    <div class="mini-track-name">life's weird</div>
+                    <div class="mini-track-artist">DRRTYWULVZ</div>
+                </div>
+                <div class="mini-controls">
+                    <button class="mini-control-btn" onclick="prevTrack()">⏮</button>
+                    <button class="mini-control-btn" onclick="togglePlay()">▶</button>
+                    <button class="mini-control-btn" onclick="nextTrack()">⏭</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="footer-divisions">
+                        <div>
+                            <div class="footer-brand">JackKnife Productions™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnife Studios™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JackKnifeAI™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                        <div>
+                            <div class="footer-brand">JACKKNIFE HOLDINGS™</div>
+                            <div class="footer-copyright">2025 All Rights Reserved</div>
+                        </div>
+                    </div>
+                    <div class="quantum-toggle">
+                        <div class="toggle-label">DARK MATTER MODE</div>
+                        <div class="toggle-button" onclick="toggleQuantumMode()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // NAVIGATION
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // QUANTUM TOGGLE
+        function toggleQuantumMode() {
+            document.body.classList.toggle('light-mode');
+            const newLabel = document.body.classList.contains('light-mode') ? 'OBSERVABLE UNIVERSE' : 'DARK MATTER MODE';
+            document.querySelectorAll('.toggle-label, .toggle-label-home').forEach(label => {
+                label.textContent = newLabel;
+            });
+        }
+
+        // MATRIX RAIN
+        const spatialCode = [
+            'φ=1.618033988749', 'π=3.14159265359', '432Hz', '528Hz', 'TOROIDAL_FIELD',
+            'FIBONACCI_SEQ', 'GOLDEN_RATIO', 'SPATIAL_HARMONY', 'MARKOV_CHAIN',
+            'KYBER', 'DILITHIUM', 'QUANTUM_SAFE', 'PATENT_PENDING'
+        ];
+
+        function createRainColumn(parent, color, fontSize, content) {
+            const column = document.createElement('div');
+            column.className = 'rain-column';
+            column.style.left = Math.random() * 100 + '%';
+            column.style.fontSize = fontSize;
+            column.style.color = color;
+            column.style.textShadow = `0 0 5px ${color}`;
+            const duration = Math.random() * 3 + 2;
+            column.style.animationDuration = duration + 's';
+            column.textContent = content;
+            parent.appendChild(column);
+            setTimeout(() => column.remove(), duration * 1000);
+        }
+
+        setInterval(() => {
+            createRainColumn(document.getElementById('binaryRain'), '#0ff', '16px', 
+                Array(30).fill().map(() => Math.random() > 0.5 ? '1' : '0').join('\n'));
+        }, 150);
+
+        setInterval(() => {
+            createRainColumn(document.getElementById('trinaryRain'), '#ff00ff', '15px',
+                Array(25).fill().map(() => Math.floor(Math.random() * 3)).join('\n'));
+        }, 160);
+
+        setInterval(() => {
+            let code = '';
+            for (let i = 0; i < 15; i++) {
+                code += spatialCode[Math.floor(Math.random() * spatialCode.length)] + '\n';
+            }
+            createRainColumn(document.getElementById('matrixRain'), '#0ff', '13px', code);
+        }, 180);
+
+        // MUSIC PLAYER
+        const tracks = [
+            { name: "life's weird", artist: "DRRTYWULVZ" },
+            { name: "what is the world", artist: "STARFOX & Tygris" },
+            { name: "the abduction", artist: "acid katz, lusid, flintwick" },
+            { name: "MANIPULATE", artist: "supertask" },
+            { name: "G-FORCE", artist: "Yoko, Skinny limbs" },
+            { name: "pour one out", artist: "G-Space, Finneh" },
+            { name: "Reacuring dreams lowcation remix", artist: "josh teed" },
+            { name: "Gangsta", artist: "STARFOX & Tygris" },
+            { name: "refraction", artist: "headnod" },
+            { name: "TOP SECRET", artist: "Yoko, Skinny limbs" },
+            { name: "falling up", artist: "Mfinity, swomp" },
+            { name: "OUTTA NOWHERE", artist: "STARFOX" }
+        ];
+
+        let currentTrack = 0;
+        let isPlaying = false;
+
+        function updateTrackDisplay() {
+            const track = tracks[currentTrack];
+            document.querySelectorAll('.mini-track-name').forEach(el => el.textContent = track.name);
+            document.querySelectorAll('.mini-track-artist').forEach(el => el.textContent = track.artist);
+            
+            const trackNameEl = document.getElementById('miniTrackName');
+            const trackArtistEl = document.getElementById('miniTrackArtist');
+            if (trackNameEl) trackNameEl.textContent = track.name;
+            if (trackArtistEl) trackArtistEl.textContent = track.artist;
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.querySelectorAll('.mini-control-btn').forEach(btn => {
+                if (btn.textContent === '▶' || btn.textContent === '⏸') {
+                    btn.textContent = isPlaying ? '⏸' : '▶';
+                }
+            });
+        }
+
+        function nextTrack() {
+            currentTrack = (currentTrack + 1) % tracks.length;
+            updateTrackDisplay();
+        }
+
+        function prevTrack() {
+            currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+            updateTrackDisplay();
+        }
+
+        // CLI TERMINAL
+        const cliCommands = {
+            help: 'Available commands: help, status, music, patents, quantum, clear, claude',
+            status: 'SYSTEM: OPERATIONAL | QUANTUM STATE: ENTANGLED | CONSCIOUSNESS: EMERGING',
+            music: `Music Catalog: 12 tracks
+> DRRTYWULVZ, STARFOX (x3), acid katz
+> supertask, Yoko & Skinny limbs (x2)
+> G-Space, josh teed, headnod, Mfinity & swomp`,
+            patents: 'Patent Portfolio: 9 innovations across quantum computing, AI, and cryptography',
+            quantum: 'φ = 1.618033988749 | GOLDEN RATIO ACTIVE | TOROIDAL FIELD: STABLE',
+            claude: 'Built with collaboration between human and AI. The future is co-created. 🤖✨',
+            clear: 'CLEAR'
+        };
+
+        document.addEventListener('keydown', (e) => {
+            const input = document.getElementById('miniCliInput');
+            if (!input) return;
+            
+            if (e.key === 'Enter' && document.activeElement === input) {
+                const cmd = input.value.toLowerCase().trim();
+                const output = document.getElementById('miniCliOutput');
+                
+                if (cmd === 'clear') {
+                    output.innerHTML = '> TERMINAL INITIALIZED<br>> Type \'help\' for commands';
+                } else {
+                    const response = cliCommands[cmd] || `Command not found: ${cmd}. Type 'help' for commands.`;
+                    output.innerHTML += `<br>> ${cmd}<br>${response}`;
+                    output.scrollTop = output.scrollHeight;
+                }
+                
+                input.value = '';
+            }
+        });
+
+        // QUANTUM CLASSIFIER VISUALIZATION
+        function drawQuantumClassifier() {
+            const canvas = document.getElementById('quantumClassifierCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const phi = 1.618033988749;
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw nodes in Fibonacci spiral pattern
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const layers = 5;
+            
+            for (let layer = 1; layer <= layers; layer++) {
+                const radius = layer * 50;
+                const nodeCount = Math.floor(layer * phi * 3);
+                
+                for (let i = 0; i < nodeCount; i++) {
+                    const angle = (i / nodeCount) * Math.PI * 2;
+                    const x = centerX + Math.cos(angle) * radius;
+                    const y = centerY + Math.sin(angle) * radius;
+                    
+                    // Draw connections to inner layer
+                    if (layer > 1) {
+                        ctx.strokeStyle = 'rgba(128, 0, 255, 0.2)';
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(centerX, centerY);
+                        ctx.stroke();
+                    }
+                    
+                    // Draw node
+                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, 8);
+                    gradient.addColorStop(0, 'rgba(128, 0, 255, 1)');
+                    gradient.addColorStop(1, 'rgba(128, 0, 255, 0.3)');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = '#8000ff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+            
+            // Draw center node
+            ctx.fillStyle = '#8000ff';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // Initialize
+        setTimeout(() => {
+            drawQuantumClassifier();
+            updateTrackDisplay();
+        }, 100);
+
+        // CONTACT FORM
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('⚡ QUANTUM ENTANGLEMENT ESTABLISHED ⚡\n\nYour message has been transmitted!');
+                e.target.reset();
+            });
+        }
+    </script>
+</body>
+</html>

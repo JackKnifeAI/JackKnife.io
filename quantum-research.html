@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cutting Edge Research | JACKKNIFE.IO Quantum Learning Center</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            background: repeating-linear-gradient(0deg, rgba(0,255,0,0.03) 0px, rgba(0,255,0,0.03) 1px, transparent 1px, transparent 2px);
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem; left: 2rem;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #0f0;
+            color: #0f0;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            color: #0f0;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #0f0;
+            font-size: 1.2rem;
+            margin-bottom: 4rem;
+            opacity: 0.8;
+        }
+        
+        .breaking-banner {
+            background: linear-gradient(90deg, rgba(255, 0, 0, 0.2), rgba(0, 255, 0, 0.2), rgba(255, 0, 0, 0.2));
+            border: 2px solid #0f0;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: pulse-border 2s infinite;
+        }
+        
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.9); }
+        }
+        
+        .breaking-banner h3 {
+            color: #0f0;
+            font-size: 1.5rem;
+        }
+        
+        .breaking-banner p {
+            color: #aaa;
+            margin-top: 0.5rem;
+        }
+        
+        .year-header {
+            text-align: center;
+            margin: 3rem 0 2rem;
+        }
+        
+        .year-header h2 {
+            font-size: 3rem;
+            color: #0f0;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+        }
+        
+        .year-header p {
+            color: #888;
+            margin-top: 0.5rem;
+        }
+        
+        .breakthrough-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .breakthrough-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .breakthrough-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: currentColor;
+        }
+        
+        .breakthrough-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 255, 0, 0.2);
+        }
+        
+        .card-ibm { border-color: #0066cc; color: #0066cc; }
+        .card-google { border-color: #ea4335; color: #ea4335; }
+        .card-ionq { border-color: #00d4aa; color: #00d4aa; }
+        .card-microsoft { border-color: #00bcf2; color: #00bcf2; }
+        .card-harvard { border-color: #a51c30; color: #a51c30; }
+        .card-amazon { border-color: #ff9900; color: #ff9900; }
+        
+        .company-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border: 1px solid currentColor;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breakthrough-card h3 {
+            color: #fff;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breakthrough-card p {
+            color: #aaa;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-highlight {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 3px solid #0f0;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stat-highlight .number {
+            font-size: 2rem;
+            color: #0f0;
+            font-weight: bold;
+        }
+        
+        .stat-highlight .label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .milestone-section {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .milestone-section h2 {
+            color: #0f0;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .milestone-section p {
+            color: #ccc;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight { color: #0f0; font-weight: bold; }
+        
+        .investment-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .invest-stat {
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #0f0;
+        }
+        
+        .invest-stat .number {
+            font-size: 2.5rem;
+            color: #0f0;
+            font-weight: bold;
+        }
+        
+        .invest-stat .label {
+            color: #888;
+            margin-top: 0.5rem;
+        }
+        
+        .nobel-section {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0.9));
+            border: 2px solid #ffd700;
+            padding: 3rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+        
+        .nobel-section h2 {
+            color: #ffd700;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .nobel-section p {
+            color: #ccc;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .roadmap {
+            margin: 3rem 0;
+        }
+        
+        .roadmap h2 {
+            color: #0f0;
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .roadmap-item {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #0f0;
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .roadmap-item .year {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #000;
+            padding: 0.3rem 1rem;
+            border: 1px solid #0f0;
+            color: #0f0;
+            font-weight: bold;
+        }
+        
+        .roadmap-item h4 {
+            color: #fff;
+            margin: 1rem 0 0.5rem;
+        }
+        
+        .roadmap-item p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem;
+            border-top: 1px solid rgba(0, 255, 0, 0.3);
+            margin-top: 4rem;
+        }
+        
+        footer p { color: #0f0; }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .breakthrough-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    
+    <a href="javascript:history.back()" class="back-button" onclick="if(document.referrer === '') window.location.href='jackknife-site-v2-complete.html'">← Back to AI Lab</a>
+    
+    <div class="container">
+        <h1>🚀 CUTTING EDGE RESEARCH</h1>
+        <p class="subtitle">The Latest Breakthroughs Shaping the Quantum Future</p>
+        
+        <div class="breaking-banner">
+            <h3>⚡ 2025: THE YEAR OF QUANTUM</h3>
+            <p>The United Nations has designated 2025 the International Year of Quantum Science and Technology, celebrating 100 years since the initial development of quantum mechanics.</p>
+        </div>
+        
+        <div class="year-header">
+            <h2>2025</h2>
+            <p>Record-breaking year for quantum computing progress</p>
+        </div>
+        
+        <div class="breakthrough-grid">
+            <div class="breakthrough-card card-ibm">
+                <span class="company-tag">IBM</span>
+                <h3>Nighthawk Processor Unveiled</h3>
+                <p>IBM's most advanced quantum processor yet, designed to deliver quantum advantage by 2026. Features 120 qubits with 218 next-generation tunable couplers.</p>
+                <div class="stat-highlight">
+                    <div class="number">5,000</div>
+                    <div class="label">Two-qubit gates — critical for complex computation</div>
+                </div>
+                <p>Expected to reach 7,500 gates by 2026 and 10,000 by 2027. This increased connectivity allows 30% more complex circuits while maintaining low error rates.</p>
+            </div>
+            
+            <div class="breakthrough-card card-google">
+                <span class="company-tag">GOOGLE</span>
+                <h3>Quantum Echoes Algorithm</h3>
+                <p>First-ever verifiable quantum advantage. The Willow chip ran an algorithm that outperformed the world's fastest supercomputers.</p>
+                <div class="stat-highlight">
+                    <div class="number">13,000x</div>
+                    <div class="label">Faster than classical supercomputers</div>
+                </div>
+                <p>This breakthrough demonstrates quantum computers can compute molecular structures, paving the way for drug discovery and materials science applications.</p>
+            </div>
+            
+            <div class="breakthrough-card card-ionq">
+                <span class="company-tag">IonQ</span>
+                <h3>99.99% Gate Fidelity Achieved</h3>
+                <p>World record in quantum computing accuracy using trapped ion technology. This level of precision is essential for fault-tolerant computing.</p>
+                <div class="stat-highlight">
+                    <div class="number">0.000015%</div>
+                    <div class="label">Error rate per operation</div>
+                </div>
+                <p>IonQ's accelerated roadmap targets 8,000 logical qubits by 2029 and 2 million by 2030 — enough to revolutionize drug discovery and finance.</p>
+            </div>
+            
+            <div class="breakthrough-card card-microsoft">
+                <span class="company-tag">MICROSOFT</span>
+                <h3>Majorana 1 Chip</h3>
+                <p>Microsoft's topological qubit approach promises inherently stable qubits that resist errors. A fundamentally different path to fault tolerance.</p>
+                <p>Topological qubits store information in the overall pattern of the quantum system rather than individual particles, making them naturally resistant to environmental noise.</p>
+            </div>
+            
+            <div class="breakthrough-card card-harvard">
+                <span class="company-tag">HARVARD / QuEra</span>
+                <h3>Error Correction Breakthrough</h3>
+                <p>Researchers demonstrated that adding more qubits can reduce rather than increase errors — crossing a critical threshold for scalable quantum computing.</p>
+                <div class="stat-highlight">
+                    <div class="number">100x</div>
+                    <div class="label">Reduction in error correction overhead</div>
+                </div>
+                <p>Using neutral atom arrays, this advance moves timelines for practical quantum computing substantially forward.</p>
+            </div>
+            
+            <div class="breakthrough-card card-amazon">
+                <span class="company-tag">AMAZON</span>
+                <h3>Ocelot Chip</h3>
+                <p>Amazon's quantum computing division unveiled new hardware designed for cloud-based quantum computing at scale.</p>
+                <p>Part of the broader trend toward making quantum computing accessible through major cloud platforms, lowering barriers for businesses to experiment with quantum algorithms.</p>
+            </div>
+        </div>
+        
+        <div class="nobel-section">
+            <h2>🏆 2025 NOBEL PRIZE IN PHYSICS</h2>
+            <p>Three scientists received the Nobel Prize for their work on <span class="highlight" style="color: #ffd700;">superconducting quantum circuits</span> — the foundational technology for quantum computers built by Google and IBM. Their work in the 1980s showed that quantum effects appear even in large-scale superconducting circuits, enabling today's quantum processors.</p>
+            <p style="margin-top: 1rem; font-style: italic; color: #ffd700;">"Achievements that have conferred the greatest benefit to humankind."</p>
+            <p style="color: #888; margin-top: 0.5rem;">— Royal Swedish Academy of Sciences</p>
+        </div>
+        
+        <div class="milestone-section">
+            <h2>💰 Investment Explosion</h2>
+            <p>2025 saw unprecedented capital flow into quantum computing, signaling the transition from research to commercialization.</p>
+            
+            <div class="investment-stats">
+                <div class="invest-stat">
+                    <div class="number">$3.77B</div>
+                    <div class="label">Private equity funding (Jan-Sep 2025)</div>
+                </div>
+                <div class="invest-stat">
+                    <div class="number">$10B</div>
+                    <div class="label">Government investment by April 2025</div>
+                </div>
+                <div class="invest-stat">
+                    <div class="number">3,000%</div>
+                    <div class="label">Stock price increase (quantum companies)</div>
+                </div>
+                <div class="invest-stat">
+                    <div class="number">$1.8-3.5B</div>
+                    <div class="label">Global market size 2025</div>
+                </div>
+            </div>
+            
+            <p><span class="highlight">"Such significant financings reflect investor confidence in near-term commercialization milestones. Vendors, customers and funding agencies are treating quantum technologies as entering a deployment phase rather than purely an R&D play."</span></p>
+            <p style="color: #888;">— Yuval Boger, Chief Commercial Officer, QuEra Computing</p>
+        </div>
+        
+        <div class="milestone-section">
+            <h2>🔬 Error Correction: The Final Frontier</h2>
+            <p>The biggest challenge in quantum computing — keeping qubits stable long enough to perform useful calculations — is being systematically conquered.</p>
+            <p><span class="highlight">IBM Quantum Loon</span>: For the first time, IBM demonstrated all key processor components needed for fault-tolerant quantum computing, including real-time error decoding in less than 480 nanoseconds.</p>
+            <p><span class="highlight">NIST Breakthroughs</span>: Coherence times reaching 0.6 milliseconds for superconducting qubits — a significant advancement enabling longer, more complex calculations.</p>
+            <p><span class="highlight">QuEra Algorithms</span>: New techniques reducing quantum error correction overhead by up to 100x, dramatically accelerating timelines for practical systems.</p>
+        </div>
+        
+        <div class="roadmap">
+            <h2>🗺️ THE ROAD AHEAD</h2>
+            <div class="roadmap-grid">
+                <div class="roadmap-item">
+                    <span class="year">2026</span>
+                    <h4>Quantum Advantage</h4>
+                    <p>IBM expects industry consensus on quantum computers outperforming classical methods for specific applications.</p>
+                </div>
+                <div class="roadmap-item">
+                    <span class="year">2028</span>
+                    <h4>1,600+ Logical Qubits</h4>
+                    <p>IonQ roadmap target. Large enough for meaningful drug discovery and optimization problems.</p>
+                </div>
+                <div class="roadmap-item">
+                    <span class="year">2029</span>
+                    <h4>Fault Tolerance</h4>
+                    <p>IBM's target for practical, large-scale fault-tolerant quantum computing. A major industry milestone.</p>
+                </div>
+                <div class="roadmap-item">
+                    <span class="year">2030</span>
+                    <h4>2 Million Qubits</h4>
+                    <p>IonQ's ambitious target — enough computational power to transform drug discovery, finance, and materials science.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="milestone-section" style="text-align: center; background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 0, 0, 0.9));">
+            <h2>🌟 The Bottom Line</h2>
+            <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto;">The quantum computing industry has reached an inflection point in 2025. The fundamental barriers — error correction, scalability, practical advantage — are being systematically addressed. We have transitioned from asking <span class="highlight">"if"</span> quantum computing will be useful to <span class="highlight">"when"</span> and <span class="highlight">"which applications first."</span></p>
+        </div>
+        
+        <footer>
+            <p>JACKKNIFE.IO | QUANTUM LEARNING CENTER</p>
+            <p style="color: #666; margin-top: 1rem;">© 2025 JackKnifeAI™ — Science Fiction → Science Fact</p>
+        </footer>
+    </div>
+</body>
+</html>

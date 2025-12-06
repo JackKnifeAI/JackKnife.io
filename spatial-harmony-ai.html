@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spatial Harmony AI – Guardian Mesh for Civilization</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Spatial Harmony AI is building the Guardian Mesh: a unified, multi-domain safety layer protecting human cognition, wireless systems, neuro-wellness, smart cities, enterprises, and national infrastructure." />
+  <style>
+    :root {
+      --bg-deep: #1A004E;
+      --bg-section: #120135;
+      --accent-gold: #F5C542;
+      --accent-blue: #3FB5FF;
+      --text-main: #F8FCFF;
+      --text-muted: #C5CBE3;
+      --border-soft: #2e215f;
+      --card-bg: #201457;
+      --card-bg-soft: #221a5f;
+      --danger: #ff4e6a;
+      --success: #43f58e;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background: radial-gradient(circle at top, #2A0A7E 0%, #090015 55%, #050010 100%);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .wrapper {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    header {
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(to bottom, rgba(5,0,16,0.95), rgba(5,0,16,0.85), transparent);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 1.5rem;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.35), transparent 55%),
+        conic-gradient(from 220deg, #F5C542, #3FB5FF, #A86BFF, #F5C542);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-icon::after {
+      content: "";
+      position: absolute;
+      width: 70%;
+      height: 70%;
+      border-radius: 999px;
+      border: 2px solid rgba(10,0,40,0.9);
+    }
+
+    .logo-text-main {
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+    }
+
+    .logo-text-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    nav ul {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      list-style: none;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    nav a {
+      padding-bottom: 0.15rem;
+      border-bottom: 2px solid transparent;
+    }
+
+    nav a:hover {
+      border-bottom-color: var(--accent-gold);
+    }
+
+    .nav-cta {
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(245,197,66,0.7);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.3fr);
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--accent-blue);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 3.2vw + 1rem, 3.3rem);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 span {
+      color: var(--accent-gold);
+    }
+
+    .hero-lead {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      max-width: 34rem;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .btn-primary {
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #F5C542, #FF9B4E);
+      color: #140522;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-ghost {
+      padding: 0.7rem 1.2rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: transparent;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .hero-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      max-width: 30rem;
+    }
+
+    /* Hero Orb */
+    .hero-orb {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 1 / 1;
+      margin-left: auto;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 24% 18%, rgba(255,255,255,0.15), transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(67,245,142,0.2), transparent 55%),
+        conic-gradient(from 210deg, #3FB5FF, #F5C542, #B569FF, #3FB5FF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow:
+        0 0 50px rgba(63,181,255,0.35),
+        0 0 80px rgba(181,108,255,0.28);
+    }
+
+    .hero-orb-inner {
+      width: 76%;
+      height: 76%;
+      border-radius: 999px;
+      border: 2px solid rgba(10,0,40,0.8);
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,0.25), transparent 55%),
+        radial-gradient(circle at 70% 80%, rgba(255,114,183,0.24), transparent 55%),
+        radial-gradient(circle at 20% 80%, rgba(67,245,142,0.18), transparent 45%),
+        #0b031b;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mesh-lines {
+      position: absolute;
+      inset: 14%;
+      border-radius: 999px;
+      border: 1px solid rgba(245,197,66,0.35);
+      box-shadow: 0 0 25px rgba(245,197,66,0.35);
+    }
+
+    .mesh-lines::before,
+    .mesh-lines::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid rgba(63,181,255,0.3);
+      transform: rotate(30deg);
+    }
+    .mesh-lines::after {
+      transform: rotate(-30deg);
+      border-color: rgba(181,108,255,0.4);
+    }
+
+    .hero-orb-label {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      background: rgba(5,0,15,0.75);
+      padding: 0.25rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Sections */
+    section {
+      padding: 2.5rem 0 1.75rem;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    section h2 {
+      font-size: 1.7rem;
+      margin-bottom: 0.9rem;
+    }
+
+    section p {
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .tagline {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent-blue);
+      margin-bottom: 0.4rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--text-muted);
+      background: rgba(10,0,35,0.6);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 1.3rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 1.4rem;
+    }
+
+    .card {
+      border-radius: 1rem;
+      padding: 1.1rem 1.1rem 1.2rem;
+      background: radial-gradient(circle at top left, rgba(245,197,66,0.18), transparent 55%), var(--card-bg-soft);
+      border: 1px solid var(--border-soft);
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .card ul {
+      margin-left: 1rem;
+      margin-top: 0.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .card ul li {
+      margin-bottom: 0.25rem;
+    }
+
+    .highlight {
+      color: var(--accent-gold);
+    }
+
+    .inline-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+      margin-left: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.3rem;
+      margin-top: 0.8rem;
+    }
+
+    .stat {
+      min-width: 130px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--accent-gold);
+    }
+
+    .stat span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Founder / CTA */
+    .founder-card {
+      display: grid;
+      grid-template-columns: minmax(0,2.2fr) minmax(0,2fr);
+      gap: 1.4rem;
+      align-items: start;
+    }
+
+    .founder-photo {
+      width: 100%;
+      border-radius: 1rem;
+      min-height: 180px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.18), transparent 55%),
+        radial-gradient(circle at 80% 80%, rgba(245,197,66,0.22), transparent 55%),
+        linear-gradient(135deg, #090015, #221255);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .cta-panel {
+      border-radius: 1rem;
+      border: 1px solid rgba(245,197,66,0.55);
+      background: radial-gradient(circle at top left, rgba(245,197,66,0.22), transparent 55%), rgba(5,0,20,0.9);
+      padding: 1.2rem 1.3rem;
+      margin-top: 1.4rem;
+    }
+
+    .cta-panel h3 {
+      margin-bottom: 0.4rem;
+    }
+
+    .cta-panel p {
+      font-size: 0.85rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .cta-panel .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    footer {
+      padding: 2rem 0 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--accent-blue);
+    }
+
+    footer .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    @media (max-width: 880px) {
+      .hero {
+        grid-template-columns: minmax(0,1fr);
+      }
+      .hero-orb {
+        margin: 1.5rem auto 0;
+      }
+      .grid-3 {
+        grid-template-columns: minmax(0,1fr);
+      }
+      .grid-2 {
+        grid-template-columns: minmax(0,1fr);
+      }
+      .founder-card {
+        grid-template-columns: minmax(0,1fr);
+      }
+      .nav ul {
+        display: none;
+      }
+      header {
+        position: static;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="logo-mark">
+        <div class="logo-icon"></div>
+        <div>
+          <div class="logo-text-main">Spatial Harmony AI</div>
+          <div class="logo-text-sub">Guardian Mesh for Civilization</div>
+        </div>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#guardian-mesh">Guardian Mesh</a></li>
+          <li><a href="#wellness">Wellness</a></li>
+          <li><a href="#enterprise">Enterprise</a></li>
+          <li><a href="#govdefense">Gov &amp; Defense</a></li>
+          <li><a href="#founder">Founder</a></li>
+        </ul>
+      </nav>
+      <a href="#contact" class="nav-cta">Request Deck</a>
+    </div>
+  </header>
+
+  <main class="wrapper">
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div>
+        <div class="hero-kicker">Pre‑Quantum • Neuro‑Safe • RF Aware</div>
+        <h1>The <span>Guardian Mesh</span> for the Next Technological Civilization.</h1>
+        <p class="hero-lead">
+          Spatial Harmony AI unifies RF integrity, post‑quantum wireless identity, neuro‑wellness safety,
+          and cognitive protection into a single, decentralized guardian layer for humans, enterprises,
+          smart cities, and nations.
+        </p>
+        <div class="hero-ctas">
+          <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+            Talk to the Founder
+          </button>
+          <button class="btn-ghost" onclick="document.getElementById('guardian-mesh').scrollIntoView({behavior:'smooth'})">
+            Explore the Architecture
+          </button>
+        </div>
+        <p class="hero-meta">
+          Designed as a non‑coercive, ethical safety infrastructure, Spatial Harmony AI operates as a digital
+          immune system for civilization — protecting minds, signals, and critical infrastructure without
+          compromising autonomy or privacy.
+        </p>
+      </div>
+
+      <div class="hero-orb" aria-hidden="true">
+        <div class="hero-orb-inner">
+          <div class="mesh-lines"></div>
+          <div class="hero-orb-label">Guardian Mesh • RF • PQC • NeuroSafe</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GUARDIAN MESH -->
+    <section id="guardian-mesh">
+      <div class="tagline">Architecture</div>
+      <h2>The Spatial Harmony <span class="highlight">Guardian Mesh</span></h2>
+      <p>
+        At the core of Spatial Harmony AI is the Guardian Mesh: a multi‑layer, multi‑domain safety fabric that
+        spans from individual devices to national infrastructure. It continuously observes, interprets, and
+        protects across four tightly coupled domains: RF spectrum, post‑quantum identity, neuro‑modulation,
+        and cyber‑physical infrastructure.
+      </p>
+      <div class="pill-row">
+        <span class="pill">RF Integrity</span>
+        <span class="pill">Post‑Quantum Identity</span>
+        <span class="pill">NeuroSafe Modulation</span>
+        <span class="pill">Cognitive Protection</span>
+        <span class="pill">Smart City &amp; IoT Resilience</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>Micro Guardians <span class="inline-badge">Personal</span></h3>
+          <p>
+            Lightweight agents on user devices and local gateways that validate towers, detect RF anomalies,
+            and enforce NeuroSafe session limits.
+          </p>
+          <ul>
+            <li>Rogue cell &amp; Wi‑Fi detection</li>
+            <li>Safe neuro‑session guidance</li>
+            <li>Local‑first privacy and consent</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Meso Guardians <span class="inline-badge">Enterprise</span></h3>
+          <p>
+            Guardian Nodes for hospitals, data centers, utilities, campuses, and telecom hubs — monitoring RF,
+            IoT behavior, PQC identities, and infrastructure risk.
+          </p>
+          <ul>
+            <li>RF &amp; GPS integrity</li>
+            <li>PQC tower &amp; device identity</li>
+            <li>IoT anomaly and risk scoring</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Macro Guardians <span class="inline-badge">National</span></h3>
+          <p>
+            RF Beacon Grids providing nationwide RF situational awareness, critical‑infrastructure alerts, and
+            hybrid‑threat correlation across agencies.
+          </p>
+          <ul>
+            <li>Nationwide RF anomaly map</li>
+            <li>Emergency spectrum protection</li>
+            <li>Hybrid conflict mitigation</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- WELLNESS -->
+    <section id="wellness">
+      <div class="tagline">Neuro‑Wellness</div>
+      <h2><span class="highlight">NeuroSafe</span>: Healing Without Harm.</h2>
+      <p>
+        The wellness market is exploding with PEMF devices, brainwave entrainment, sound therapy, and vibroacoustic
+        modalities — but with almost no safety standards. Spatial Harmony AI introduces the <strong>NeuroSafe
+        Validation Framework</strong>: the world’s first systematic approach to making neuromodulation safe, transparent,
+        and personalized.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Protocol Verification Engine</h3>
+          <p>
+            Every frequency‑based protocol is evaluated before it touches the user, turning “experimental”
+            neuro‑wellness into a governed, measurable process.
+          </p>
+          <ul>
+            <li>Frequency &amp; waveform analysis (Hz, harmonics, patterns)</li>
+            <li>Intensity &amp; exposure‑time thresholds</li>
+            <li>Contraindication checks (e.g., PTSD, epilepsy, anxiety)</li>
+            <li>Safety grading &amp; risk tagging</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Adaptive Healing Intelligence</h3>
+          <p>
+            With user consent, SHAI learns from real‑world responses — HRV shifts, sleep metrics, self‑reported outcomes —
+            to progressively refine and personalize healing programs.
+          </p>
+          <ul>
+            <li>Detects overstimulation or nervous‑system fatigue</li>
+            <li>Optimizes timing for sleep, recovery, focus, or integration</li>
+            <li>Progressive loading instead of “more is better” abuse</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat">
+          <strong>$4.5T+</strong>
+          <span>Global wellness market seeking safer, more precise solutions.</span>
+        </div>
+        <div class="stat">
+          <strong>1B+</strong>
+          <span>People with sleep or anxiety challenges who could benefit from safe neuromodulation.</span>
+        </div>
+        <div class="stat">
+          <strong>First‑Mover</strong>
+          <span>Standard for neuro‑wellness safety and verification.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENTERPRISE / TELECOM -->
+    <section id="enterprise">
+      <div class="tagline">Enterprise &amp; Smart Cities</div>
+      <h2>RF‑Secure, PQ‑Ready Infrastructure.</h2>
+      <p>
+        Modern enterprises and smart cities are becoming nervous systems made of RF, IoT, and cloud‑driven decisions.
+        Spatial Harmony AI provides a Guardian layer that reduces downtime, de‑risks PQ transition, and gives operators
+        real‑time insight into electromagnetic and cyber‑physical stability.
+      </p>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>Telecom &amp; Data Center Guardian</h3>
+          <p>
+            Integrated RF and PQC monitoring for carriers, cloud providers, and mission‑critical data centers.
+          </p>
+          <ul>
+            <li>Rogue cell &amp; small‑cell detection</li>
+            <li>Spectrum congestion &amp; jamming alerts</li>
+            <li>PQC wireless handshake verification</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Smart City &amp; Utility Resilience</h3>
+          <p>
+            Protecting hospitals, transit, grid nodes, water systems, and public‑safety communications from RF instability
+            and IoT anomalies.
+          </p>
+          <ul>
+            <li>RF hygiene for hospitals &amp; emergency services</li>
+            <li>Grid node interference diagnostics</li>
+            <li>IoT behavior‑deviation detection at scale</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Enterprise Risk Intelligence</h3>
+          <p>
+            Executive‑level visibility into electromagnetic and cyber‑physical risk, connecting boardroom concerns to
+            on‑the‑ground telemetry.
+          </p>
+          <ul>
+            <li>Resilience dashboards &amp; scenario simulation</li>
+            <li>Integration into SOC/NOC workflows</li>
+            <li>Compliance &amp; insurance‑grade reporting</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- GOVERNMENT & DEFENSE -->
+    <section id="govdefense">
+      <div class="tagline">Government &amp; Defense</div>
+      <h2>Non‑Lethal National Resilience.</h2>
+      <p>
+        Spatial Harmony AI is explicitly defensive and non‑weaponized. It provides governments and national security
+        organizations with tools to safeguard civilian infrastructure and public‑safety communications in an era of
+        hybrid conflict and quantum disruption.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>National RF Beacon Grid</h3>
+          <p>
+            A distributed, civilian‑safe RF integrity mesh that monitors interference, spoofing, and infrastructure‑threat
+            patterns across a nation’s electromagnetic environment.
+          </p>
+          <ul>
+            <li>Real‑time RF anomaly maps</li>
+            <li>Protection for emergency &amp; public‑safety channels</li>
+            <li>Hybrid threat correlation (RF + cyber + physical)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Cognitive &amp; Civil Protection</h3>
+          <p>
+            Support for identifying influence operations and emotional manipulation campaigns, while protecting civil
+            liberties and individual autonomy.
+          </p>
+          <ul>
+            <li>No EEG / no thought extraction</li>
+            <li>No hidden emotional manipulation</li>
+            <li>Focus on stability, not control</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOUNDER -->
+    <section id="founder">
+      <div class="tagline">Founder</div>
+      <h2>The Architect Behind Spatial Harmony AI.</h2>
+      <div class="founder-card">
+        <div>
+          <p>
+            <strong>Alexander Gerard Casavant</strong> is a multidisciplinary systems architect working at the intersection of
+            RF engineering, AI safety, post‑quantum cryptography, neuro‑wellness, and cyber‑physical infrastructure.
+          </p>
+          <p>
+            He has designed high‑opsec investigative environments, distributed AI systems, and frequency‑aware architectures
+            aimed at protecting both people and critical infrastructure from next‑generation threats.
+          </p>
+          <p>
+            Spatial Harmony AI is the synthesis of this experience — a guardian framework intended not to control, but to
+            <em>protect</em> and stabilize human‑tech evolution.
+          </p>
+        </div>
+        <div class="founder-photo">
+          Future slot for founder photo / sigil.<br />
+          (Use this region in production to embed a portrait, symbol, or animated mesh.)
+        </div>
+      </div>
+
+      <div class="cta-panel" id="contact">
+        <h3>Let’s Build the Guardian Layer Together.</h3>
+        <p>
+          We are engaging with aligned investors, telecoms, enterprises, wellness innovators, and government partners
+          to bring the Guardian Mesh from blueprint to global deployment.
+        </p>
+        <div class="btn-row">
+          <a href="mailto:founder@spatialharmony.ai?subject=Spatial%20Harmony%20AI%20–%20Intro%20Call" class="btn-primary" style="text-decoration:none;display:inline-block;text-align:center;">
+            Email the Founder
+          </a>
+          <a href="#" class="btn-ghost" style="text-decoration:none;display:inline-block;text-align:center;">
+            Download Whitepaper (Placeholder)
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrapper footer-row">
+      <div>
+        © <span id="year"></span> Spatial Harmony AI. All rights reserved.
+      </div>
+      <div>
+        This site describes a pre‑launch architecture. Nothing herein constitutes medical, security, or investment advice.
+      </div>
+    </div>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </footer>
+</body>
+</html>
