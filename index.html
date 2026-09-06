@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JackKnife Studios — Your Entire Office, Run by AI. You Run the Trade.</title>
+<meta name="description" content="JackKnife Studios builds and operates a complete AI-run office for trade contractors — reception, estimating, invoicing, scheduling, answering, hiring, and advertising. Built by builders, for the trades. 11 years behind it. On hardware you own." />
+<link rel="icon" type="image/svg+xml" href="logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* deep blueprint blue base */
+  --bg:#060a14; --bg2:#080d1a; --panel:#0c1322; --panel2:#101a2c; --ink:#03060d;
+  --line:#ffffff12; --line2:#ffffff24; --blue-line:#60a5fa;
+  --txt:#e7ebf2; --mut:#98a3b5; --dim:#66718a;
+  --gold:#fbbf24; --gold-hi:#ffe9a8; --gold-lo:#b8860b; --gold-deep:#5c4a1a;
+  --blue:#3b82f6; --blue-hi:#7cb2ff; --cyan:#00f5ff; --purple:#a855f7; --green:#22ff88;
+  --font-display:'Chakra Petch','Inter',system-ui,sans-serif;
+  --font-sans:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','SF Mono',monospace;
+  --g-gold:linear-gradient(135deg,#b8860b 0%,#fbbf24 42%,#ffe9a8 68%,#f5c542 100%);
+  --g-metal-gold:linear-gradient(160deg,#3b2f12 0%,#150f08 40%,#5c4a1a 74%,#221806 100%);
+  --g-metal-steel:linear-gradient(160deg,#152238 0%,#0a1120 42%,#1c2c47 76%,#0a1120 100%);
+  --g-blue:linear-gradient(135deg,#1d4ed8 0%,#3b82f6 50%,#7cb2ff 100%);
+  --g-dna:linear-gradient(90deg,#a855f7,#00f5ff);
+  --g-silver:linear-gradient(180deg,#ffffff 0%,#9aa6bd 100%);
+  --maxw:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--txt); font-family:var(--font-sans);
+  line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  font-feature-settings:'ss01','cv01';
+}
+/* ---------- DEEP BLUE GRAPH PAPER ---------- */
+body::before{
+  content:''; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(#60a5fa0d 1px,transparent 1px),
+    linear-gradient(90deg,#60a5fa0d 1px,transparent 1px),
+    linear-gradient(#60a5fa26 1px,transparent 1px),
+    linear-gradient(90deg,#60a5fa26 1px,transparent 1px);
+  background-size:28px 28px,28px 28px,140px 140px,140px 140px;
+  background-position:center center;
+}
+/* ambient light + vignette so the grid falls off at the edges */
+body::after{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 78% -8%, #fbbf2414, transparent 62%),
+    radial-gradient(860px 580px at 6% 4%, #3b82f61f, transparent 60%),
+    radial-gradient(1200px 780px at 50% 116%, #a855f710, transparent 62%),
+    radial-gradient(1500px 1000px at 50% 42%, transparent 26%, #060a14e6 100%);
+}
+a{color:inherit;text-decoration:none}
+img,svg{display:block}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.mono{font-family:var(--font-mono)}
+.gold-text{background:var(--g-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dna-text{background:var(--g-dna);-webkit-background-clip:text;background-clip:text;color:transparent}
+.blue-text{background:var(--g-blue);-webkit-background-clip:text;background-clip:text;color:transparent}
+.silver-text{background:var(--g-silver);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- NAV ---------- */
+header{position:sticky;top:0;z-index:50;transition:background .3s,border-color .3s,backdrop-filter .3s;border-bottom:1px solid transparent}
+header.scrolled{background:#060a14cc;backdrop-filter:blur(14px) saturate(1.3);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--font-display);font-weight:700;letter-spacing:1.2px;font-size:16px}
+.brand svg,.brand img{filter:drop-shadow(0 0 8px #fbbf2455)}
+.brand b{color:#fff;font-weight:700}.brand span{color:var(--gold)}
+.navlinks{display:flex;gap:26px;align-items:center}
+.navlinks a{color:var(--mut);font-size:14px;font-weight:500;transition:color .2s}
+.navlinks a:hover{color:var(--gold-hi)}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--font-display);font-weight:700;
+  font-size:14.5px;letter-spacing:.6px;padding:12px 22px;border-radius:9px;cursor:pointer;
+  border:1px solid transparent;transition:transform .18s,box-shadow .25s,filter .2s;white-space:nowrap
+}
+.btn-gold{background:var(--g-gold);color:#170f02;box-shadow:0 0 0 1px #fbbf2455,0 8px 28px #fbbf2426,inset 0 1px 0 #fff8}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 0 0 1px #fbbf2480,0 12px 40px #fbbf2440,inset 0 1px 0 #fff}
+.btn-ghost{background:#ffffff08;color:var(--txt);border:1px solid var(--line2)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold-hi);transform:translateY(-2px)}
+.btn-blue{background:var(--g-blue);color:#03102b;box-shadow:0 0 0 1px #3b82f655,0 8px 28px #3b82f633,inset 0 1px 0 #ffffff66}
+.btn-blue:hover{transform:translateY(-2px);box-shadow:0 0 0 1px #3b82f680,0 12px 40px #3b82f64d}
+.nav .btn{padding:10px 18px}
+.burger{display:none;background:none;border:0;color:#fff;cursor:pointer}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;padding:96px 0 74px;text-align:center;overflow:hidden}
+.hero::before{
+  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(680px 340px at 50% 26%,#3b82f61f,transparent 68%)
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:12.5px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;color:var(--gold-hi);
+  border:1px solid #fbbf2440;background:#fbbf240d;padding:8px 16px;border-radius:100px;margin-bottom:26px;
+  box-shadow:inset 0 1px 0 #fbbf2433,0 0 24px #fbbf2412;backdrop-filter:blur(6px)
+}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+h1{font-family:var(--font-display);font-weight:700;line-height:1.03;letter-spacing:-.5px;
+  font-size:clamp(38px,6.6vw,80px);margin-bottom:24px;text-transform:uppercase}
+h1 .line2{background:var(--g-gold);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 30px #fbbf2440)}
+.sub{max-width:730px;margin:0 auto 16px;font-size:clamp(17px,2.1vw,21px);color:var(--mut);font-weight:400}
+.sub b{color:var(--txt);font-weight:600}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.trust-strip{display:flex;flex-wrap:wrap;gap:14px 30px;justify-content:center;margin-top:52px;
+  padding-top:30px;border-top:1px solid var(--line)}
+.trust-strip .ti{display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:13px;color:var(--mut)}
+.trust-strip .ti b{color:var(--gold-hi);font-weight:700}
+.trust-strip svg{width:16px;height:16px;stroke:var(--gold);fill:none;opacity:.9}
+
+/* ---------- SECTION SHELL ---------- */
+section{position:relative;padding:88px 0}
+.sec-tag{font-family:var(--font-mono);font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.sec-tag::before{content:'';width:26px;height:1px;background:var(--g-gold)}
+h2{font-family:var(--font-display);font-weight:700;letter-spacing:-.3px;line-height:1.1;
+  font-size:clamp(28px,4.2vw,46px);margin-bottom:18px;text-transform:uppercase}
+h3{font-family:var(--font-display);letter-spacing:.2px}
+.lead{font-size:clamp(16px,1.8vw,19px);color:var(--mut);max-width:660px}
+.center{text-align:center}.center .sec-tag{justify-content:center}.center .sec-tag::before{display:none}
+.center .lead{margin:0 auto}
+.panelbg{background:linear-gradient(180deg,transparent,#080e1ce6 26%,#080e1ce6 74%,transparent);border-block:1px solid var(--line)}
+
+/* ---------- WEDGE ---------- */
+.wedge-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:44px}
+.wcard{border:1px solid var(--line);border-radius:18px;padding:32px;position:relative;overflow:hidden;backdrop-filter:blur(4px)}
+.wcard.them{background:#0a101ccc}
+.wcard.us{background:var(--g-metal-gold);border-color:#fbbf2440;box-shadow:inset 0 1px 0 #fbbf2433,0 0 40px #fbbf2410}
+.wcard h3{font-size:14px;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:20px;font-weight:600}
+.wcard.them h3{color:var(--dim)}.wcard.us h3{color:var(--gold-hi)}
+.wcard ul{list-style:none;display:flex;flex-direction:column;gap:13px}
+.wcard li{display:flex;gap:12px;font-size:15.5px;align-items:flex-start}
+.wcard li svg{width:19px;height:19px;flex-shrink:0;margin-top:2px}
+.wcard.them li{color:var(--mut)}.wcard.them li svg{stroke:#5a6478}
+.wcard.us li{color:#f4ecd8}.wcard.us li svg{stroke:var(--gold-hi)}
+.wcard .price{margin-top:22px;padding-top:18px;border-top:1px solid #ffffff14;font-family:var(--font-mono)}
+.wcard.them .price{color:var(--dim)}.wcard.us .price{color:#fff}
+.wcard .price b{font-size:22px}
+
+/* ---------- BUILDERS BAND ---------- */
+.builders{background:#03060dd9;border-block:1px solid var(--line);text-align:center;backdrop-filter:blur(2px)}
+.builders .manifesto{font-family:var(--font-display);font-weight:600;letter-spacing:0;
+  font-size:clamp(22px,3.4vw,34px);line-height:1.35;max-width:920px;margin:22px auto 0}
+.builders .manifesto .hl{color:var(--gold-hi)}
+.builders .kick{display:block;margin-top:20px;font-size:clamp(20px,3vw,30px);font-weight:700;text-transform:uppercase;letter-spacing:-.2px}
+
+/* ---------- FEATURE GRID ---------- */
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.fcard{position:relative;background:#0c1322cc;border:1px solid var(--line);border-radius:16px;
+  padding:26px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;backdrop-filter:blur(6px)}
+.fcard::after{content:'';position:absolute;inset:0;border-radius:16px;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,#ffffff10 48%,transparent 62%);
+  transform:translateX(-120%);transition:transform .8s}
+.fcard:hover{transform:translateY(-5px);border-color:#fbbf2455;box-shadow:0 18px 50px #00000080,0 0 0 1px #fbbf2426}
+.fcard:hover::after{transform:translateX(120%)}
+.ficon{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;margin-bottom:16px;
+  background:#fbbf240d;border:1px solid #fbbf2433;box-shadow:inset 0 1px 0 #fbbf2426}
+.ficon svg{width:22px;height:22px;stroke:var(--gold);fill:none;stroke-width:1.7}
+.fcard h3{font-size:16.5px;font-weight:700;margin-bottom:9px;color:#fff;text-transform:uppercase;letter-spacing:.4px}
+.fcard p{font-size:14.5px;color:var(--mut);line-height:1.55}
+
+/* ---------- YOUR TRADE / ADD-ONS ---------- */
+.agrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:44px}
+.acard{position:relative;border-radius:18px;padding:30px;overflow:hidden;
+  background:var(--g-metal-steel);border:1px solid var(--line2);transition:transform .25s,box-shadow .25s}
+.acard:hover{transform:translateY(-4px);box-shadow:0 20px 60px #00000099}
+.acard .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--blue-hi);
+  display:inline-block;margin-bottom:14px;padding:4px 10px;border:1px solid #3b82f640;border-radius:100px;background:#3b82f612}
+.acard h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px}
+.acard p{font-size:15px;color:#bcc7d9}
+.acard.wide{grid-column:1/-1;background:var(--g-metal-gold);border-color:#fbbf2440;text-align:center;padding:40px 30px}
+.acard.wide .tag{color:var(--gold-hi);border-color:#fbbf2440;background:#fbbf240d}
+.acard.wide h3{font-size:clamp(22px,3vw,30px);margin-bottom:12px}
+.acard.wide p{color:#efe6d2;max-width:660px;margin:0 auto;font-size:16px}
+
+/* ---------- MANAGED PIPELINE ---------- */
+.pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:48px;
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0c1322cc;backdrop-filter:blur(6px)}
+.pstep{padding:28px 24px;border-right:1px solid var(--line);position:relative}
+.pstep:last-child{border-right:0}
+.pstep .num{font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:12px}
+.pstep h3{font-size:16.5px;color:#fff;margin-bottom:8px;text-transform:uppercase;font-weight:700}
+.pstep p{font-size:13.5px;color:var(--mut)}
+.pstep.adv{background:var(--g-metal-gold)}
+.pstep.adv .num{color:var(--gold-hi)}.pstep.adv p{color:#e9dfc9}
+
+/* ---------- HIRING ---------- */
+.hiring{border-block:1px solid var(--line);background:linear-gradient(180deg,transparent,#070d1ae6 30%,#070d1ae6 70%,transparent)}
+.hire-banner{margin-top:44px;border:1px solid #3b82f640;border-radius:20px;padding:34px 34px;
+  background:radial-gradient(700px 260px at 20% 0%,#3b82f61f,transparent 70%),#0a1222e6;
+  display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.hire-banner .bi{width:56px;height:56px;border-radius:14px;flex-shrink:0;display:grid;place-items:center;
+  background:#3b82f614;border:1px solid #3b82f640;box-shadow:inset 0 1px 0 #7cb2ff33}
+.hire-banner .bi svg{width:28px;height:28px;stroke:var(--blue-hi);fill:none;stroke-width:1.6}
+.hire-banner p{font-family:var(--font-display);font-weight:600;font-size:clamp(18px,2.4vw,24px);line-height:1.4;flex:1;min-width:280px;color:#dfe6f2}
+.hire-banner p b{color:var(--gold-hi);font-weight:700}
+.hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.hcard{background:#0c1322cc;border:1px solid var(--line);border-radius:16px;padding:28px;backdrop-filter:blur(6px);
+  transition:transform .25s,border-color .25s}
+.hcard:hover{transform:translateY(-4px);border-color:#3b82f655}
+.hcard .hn{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;color:var(--blue-hi);margin-bottom:12px}
+.hcard h3{font-size:16.5px;color:#fff;margin-bottom:8px;text-transform:uppercase;font-weight:700;letter-spacing:.3px}
+.hcard p{font-size:14.5px;color:var(--mut)}
+
+/* ---------- SOVEREIGNTY ---------- */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+.scard{background:#0c1322cc;border:1px solid var(--line);border-radius:16px;padding:28px;backdrop-filter:blur(6px)}
+.scard .si{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;margin-bottom:16px;
+  background:#a855f70d;border:1px solid #a855f733}
+.scard .si svg{width:20px;height:20px;stroke:var(--cyan);fill:none;stroke-width:1.7}
+.scard h3{font-size:16.5px;color:#fff;margin-bottom:8px;text-transform:uppercase;font-weight:700;letter-spacing:.3px}
+.scard p{font-size:14px;color:var(--mut)}
+
+/* ---------- PRICING ---------- */
+.price-wrap{max-width:620px;margin:48px auto 0}
+.price-card{position:relative;background:#101a2ceb;border:1px solid #fbbf2440;border-radius:22px;
+  padding:44px 40px;text-align:center;overflow:hidden;backdrop-filter:blur(8px);
+  box-shadow:0 0 0 1px #fbbf2412,0 30px 80px #00000099,inset 0 1px 0 #fbbf2426}
+.price-card::before{content:'';position:absolute;top:-1px;left:0;right:0;height:2px;background:var(--g-gold)}
+.price-card .plabel{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-hi);margin-bottom:18px}
+.price-row{display:flex;justify-content:center;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:8px}
+.price-row .pcol .amt{font-family:var(--font-display);font-weight:700;font-size:52px;line-height:1;background:var(--g-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.price-row .pcol .cap{font-size:13px;color:var(--mut);margin-top:8px;font-family:var(--font-mono)}
+.price-row .plus{font-size:28px;color:var(--dim);align-self:center}
+.price-card .allin{font-size:14.5px;color:var(--mut);margin:18px auto 26px;max-width:430px}
+.price-card .allin b{color:var(--gold-hi)}
+.price-list{list-style:none;text-align:left;max-width:430px;margin:0 auto 30px;display:grid;gap:11px}
+.price-list li{display:flex;gap:11px;font-size:14.5px;color:#ccd4e0}
+.price-list li svg{width:18px;height:18px;stroke:var(--gold);flex-shrink:0;margin-top:3px}
+.price-card .btn{width:100%;justify-content:center}
+
+.addons-head{margin-top:78px;text-align:center}
+.addons-head h3{font-family:var(--font-display);font-weight:700;text-transform:uppercase;
+  font-size:clamp(22px,3vw,32px);color:#fff;margin-bottom:12px;letter-spacing:-.2px}
+.addons-head p{color:var(--mut);max-width:620px;margin:0 auto;font-size:16px}
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:38px}
+.pkg{position:relative;background:#0b1120e6;border:1px solid var(--line2);border-radius:18px;padding:30px;
+  overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;backdrop-filter:blur(6px);
+  display:flex;flex-direction:column}
+.pkg:hover{transform:translateY(-4px);border-color:#3b82f666;box-shadow:0 22px 60px #00000099}
+.pkg.featured{border-color:#fbbf2455;background:radial-gradient(560px 240px at 50% -10%,#fbbf241a,transparent 70%),#0d1424f2}
+.pkg.featured:hover{border-color:#fbbf2499}
+.pkg .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--blue-hi);
+  align-self:flex-start;margin-bottom:14px;padding:4px 10px;border:1px solid #3b82f640;border-radius:100px;background:#3b82f612}
+.pkg.featured .tag{color:var(--gold-hi);border-color:#fbbf2455;background:#fbbf2412}
+.pkg h4{font-family:var(--font-display);font-size:21px;font-weight:700;color:#fff;margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px}
+.pkg .pdesc{font-size:14.5px;color:var(--mut);margin-bottom:20px}
+.pkg .pnums{display:flex;align-items:flex-end;gap:18px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:20px}
+.pkg .pnums .n{font-family:var(--font-display);font-weight:700;font-size:30px;line-height:1;color:#fff}
+.pkg.featured .pnums .n{background:var(--g-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pkg .pnums .u{font-family:var(--font-mono);font-size:11.5px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+.pkg .pnums .sep{width:1px;align-self:stretch;background:var(--line)}
+.pkg ul{list-style:none;display:grid;gap:9px;margin-top:auto}
+.pkg li{display:flex;gap:10px;font-size:14px;color:#c2cbd9}
+.pkg li svg{width:16px;height:16px;stroke:var(--blue-hi);flex-shrink:0;margin-top:4px}
+.pkg.featured li svg{stroke:var(--gold)}
+.pnote{text-align:center;font-family:var(--font-mono);font-size:12.5px;color:var(--dim);margin-top:30px;letter-spacing:.6px;line-height:1.9}
+.pnote b{color:var(--mut);font-weight:600}
+
+/* ---------- REVIEWS MARQUEE ---------- */
+.reviews{border-top:1px solid var(--line);padding:74px 0;overflow:hidden}
+.marquee{display:flex;gap:18px;width:max-content;animation:scroll 46s linear infinite;margin-top:40px}
+.reviews:hover .marquee{animation-play-state:paused}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.rcard{width:360px;flex-shrink:0;background:#0c1322cc;border:1px solid var(--line);border-radius:16px;padding:26px;backdrop-filter:blur(6px)}
+.rcard .stars{color:var(--gold);letter-spacing:3px;font-size:15px;margin-bottom:14px}
+.rcard .quote{font-size:15px;color:#ccd5e2;line-height:1.6;margin-bottom:20px}
+.rcard .who{display:flex;align-items:center;gap:12px}
+.rcard .av{width:40px;height:40px;border-radius:50%;background:var(--g-gold);display:grid;place-items:center;
+  font-family:var(--font-display);font-weight:700;color:#170f02;font-size:15px}
+.rcard .who b{display:block;font-size:14px;color:#fff}
+.rcard .who span{font-size:12.5px;color:var(--dim);font-family:var(--font-mono)}
+.rnote{text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--dim);margin-top:34px;letter-spacing:1px}
+
+/* ---------- FINAL CTA ---------- */
+.final{text-align:center;padding:100px 0}
+.final .glowbox{max-width:840px;margin:0 auto;border:1px solid #fbbf2440;border-radius:24px;padding:60px 40px;
+  background:radial-gradient(620px 320px at 50% 0%,#fbbf2416,transparent 70%),#0c1322e6;position:relative;overflow:hidden;backdrop-filter:blur(8px)}
+.final h2{font-size:clamp(30px,5vw,54px);margin-bottom:18px}
+.final p{color:var(--mut);font-size:18px;max-width:540px;margin:0 auto 34px}
+.final .hero-cta{margin-top:0}
+
+/* ---------- FOOTER ---------- */
+footer{border-top:1px solid var(--line);padding:56px 0 40px;background:#03060db3}
+.fcols{display:flex;justify-content:space-between;flex-wrap:wrap;gap:30px;margin-bottom:36px}
+.fabout{max-width:340px}
+.fabout .brand{margin-bottom:14px}
+.fabout p{font-size:14px;color:var(--mut)}
+.fcol h4{font-family:var(--font-mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+.fcol a{display:block;font-size:14px;color:var(--mut);margin-bottom:10px;transition:color .2s}
+.fcol a:hover{color:var(--gold-hi)}
+.fbottom{border-top:1px solid var(--line);padding-top:26px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  font-family:var(--font-mono);font-size:12.5px;color:var(--dim)}
+.fbottom .dna-text{font-weight:600}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:980px){
+  .navlinks{gap:20px}.navlinks a{font-size:13.5px}
+}
+@media(max-width:900px){
+  .fgrid,.sgrid,.hgrid{grid-template-columns:repeat(2,1fr)}
+  .pipe{grid-template-columns:1fr 1fr}
+  .pstep:nth-child(2n){border-right:0}
+  .pstep{border-bottom:1px solid var(--line)}
+}
+@media(max-width:720px){
+  .navlinks{display:none}.burger{display:block}
+  .navlinks.open{display:flex;position:absolute;top:70px;left:0;right:0;flex-direction:column;
+    background:#060a14f5;backdrop-filter:blur(14px);padding:22px 24px;gap:18px;border-bottom:1px solid var(--line)}
+  .wedge-grid,.agrid,.fgrid,.sgrid,.hgrid,.pgrid{grid-template-columns:1fr}
+  .pipe{grid-template-columns:1fr}.pstep{border-right:0;border-bottom:1px solid var(--line)}
+  .pstep:last-child{border-bottom:0}
+  section{padding:64px 0}.hero{padding:64px 0 54px}
+  .hire-banner{padding:26px 22px}
+  .price-card{padding:34px 24px}
+}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <img src="logo.svg" width="34" height="34" alt="" />
+      <span><b>JACKKNIFE</b> <span>STUDIOS</span></span>
+    </a>
+    <nav class="navlinks" id="menu">
+      <a href="#office">The Office</a>
+      <a href="#trade">Your Trade</a>
+      <a href="#managed">Managed</a>
+      <a href="#hiring">Hiring</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn btn-gold" href="#contact">Book a walkthrough</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Menu">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow"><span class="dot"></span>Built by builders, for the trades · 11 years on the tools</span>
+      <h1>We run your entire office.<br /><span class="line2">You run your trade.</span></h1>
+      <p class="sub">JackKnife Studios hands you a full AI office team — <b>reception, estimating, invoicing, scheduling, a 24/7 answering service, hiring, and your advertising</b> — customized down to the wire for how your business actually works. On hardware you own. Managed by us from the first phone call to the ad that rang it.</p>
+      <div class="hero-cta">
+        <a class="btn btn-gold" href="#contact">Book a walkthrough</a>
+        <a class="btn btn-ghost" href="#office">See what your office does</a>
+      </div>
+      <div class="trust-strip">
+        <div class="ti"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2l2.5 6.5H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.5z"/></svg><b>11 years</b>&nbsp;in the trades</div>
+        <div class="ti"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M3 21h18M6 21V10l6-5 6 5v11M9 21v-6h6v6"/></svg>Built by builders</div>
+        <div class="ti"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Every trade, custom-built</div>
+        <div class="ti"><svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>Your hardware, your data</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEDGE -->
+  <section class="panelbg reveal">
+    <div class="wrap center">
+      <div class="sec-tag">The difference</div>
+      <h2>They sell you a phone answerer.<br />We hand you the whole crew.</h2>
+      <p class="lead">Everyone else automates one task and calls it an AI employee. We replace the back office — and give it a voice with a personality, not a monotone script.</p>
+      <div class="wedge-grid" style="text-align:left">
+        <div class="wcard them">
+          <h3>The typical "AI receptionist"</h3>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>Answers the phone. That's the product.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>Reads a rigid script in a flat robot voice.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>Bolts onto software you still pay for and manage.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>Your customer data lives on their servers.</li>
+          </ul>
+          <div class="price">$1,000–$3,000<b>/mo</b> · for one blade</div>
+        </div>
+        <div class="wcard us">
+          <h3>JackKnife Studios</h3>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Reception, estimating, invoicing, scheduling, answering &amp; advertising — one team.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Agents with a job, a memory, and a mouth — they know what you quoted in March.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Zero separate accounts. We operate the entire stack for you.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Runs on hardware you own. You keep 100% of your data.</li>
+          </ul>
+          <div class="price">$450<b>/mo</b> · the whole office, operated</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUILDERS BAND -->
+  <section class="builders reveal">
+    <div class="wrap">
+      <div class="sec-tag center" style="justify-content:center">Built by builders, for the trades</div>
+      <p class="manifesto">
+        Eleven years on the tools. Eleven years of customers, callbacks, and midnight quotes.
+        We know what a <span class="hl">Tuesday</span> actually looks like on a job — the lead you forgot,
+        the estimate you scribbled on a truck seat, the invoice that never went out.
+        <span class="kick gold-text">So we didn't build a chatbot with a phone number. We built you a crew.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- THE OFFICE / FEATURES -->
+  <section id="office" class="reveal">
+    <div class="wrap center">
+      <div class="sec-tag">Your office, running itself</div>
+      <h2>Everything a full front office does.<br />Nothing you have to hire for.</h2>
+      <p class="lead">One private platform, tuned to your operational flow. Your crew shows up on day one already knowing your business.</p>
+    </div>
+    <div class="wrap">
+      <div class="fgrid">
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><path d="M3 5h18v11H3z"/><path d="M3 16l4 4M21 16l-4 4"/><circle cx="12" cy="10" r="2"/></svg></div><h3>A Website That Wins Work</h3><p>Custom, mobile-first, and local-SEO built for your service area — with a "plan your project" intake that captures photos and site plans, not just a phone number.</p></div>
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><h3>Estimates That Never Guess</h3><p>Domain-aware scoping with parts and pricing verified against real regional suppliers — real part numbers, current prices, source-cited. The math is calculator-checked on every line.</p></div>
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg></div><h3>Invoicing &amp; Job Costing</h3><p>Professional numbered invoices straight from approved estimates. Deposits, progress, and final billing — with true margin per job so you know what you actually made.</p></div>
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></div><h3>A Calendar That Builds Itself</h3><p>Your schedule assembles from real commitments and syncs straight to your phone. An evening digest lays out tomorrow before you close the truck door.</p></div>
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><path d="M4 5c0 9 6 15 15 15v-3l-4-2-2 2a11 11 0 0 1-6-6l2-2-2-4H4z"/></svg></div><h3>A 24/7 Answering Crew</h3><p>Overflow and after-hours calls answered, understood, and captured — with emergency detection that escalates to your cell. You never lose a job to voicemail again.</p></div>
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><path d="M4 5h16v10H8l-4 4z"/></svg></div><h3>Customer Comms, Handled</h3><p>Appointment reminders, "on our way" texts, and follow-ups that keep every customer in the loop — every message drafted for you, sent only on your one-tap approval.</p></div>
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 9l3 3 5-5"/></svg></div><h3>One Live Dashboard</h3><p>Push notifications to your phone, a live activity feed, and business health at a glance. Installs from the browser — full-screen, offline-ready, no app store.</p></div>
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 5-3 8-7 9-4-1-7-4-7-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Private By Design</h3><p>Encrypted, private networking. The dashboard is never public. Your customer data lives on your server — and you own every byte of it, exportable any time.</p></div>
+        <div class="fcard"><div class="ficon"><svg viewBox="0 0 24 24"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg></div><h3>A Weekly Digest</h3><p>One clean summary every week: money in, new leads, your response-time record, and the week ahead. The whole business, on one page, in one glance.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- YOUR TRADE / ADD-ONS -->
+  <section id="trade" class="panelbg reveal">
+    <div class="wrap center">
+      <div class="sec-tag">Your trade, designed and accounted for</div>
+      <h2>Whatever your trade needs,<br />we build it in.</h2>
+      <p class="lead">This isn't a template with your logo dropped on top. We map your operation and engineer the tools your specific trade actually runs on — and we've built the hard ones before.</p>
+    </div>
+    <div class="wrap">
+      <div class="agrid">
+        <div class="acard">
+          <span class="tag">Field tooling</span>
+          <h3>CAD &amp; Blueprint Drawings</h3>
+          <p>Need drawings and plan sets in the loop? We generate and manage them — so the office, the estimate, and the field are all working off the same source of truth.</p>
+        </div>
+        <div class="acard">
+          <span class="tag">Crew app</span>
+          <h3>The Field App For Your Team</h3>
+          <p>An app your crew opens each morning to see the blueprints for the job and their tasks for the day — the whole site in their pocket, updated the second you change it.</p>
+        </div>
+        <div class="acard">
+          <span class="tag">Command center</span>
+          <h3>A Cyber Site Manager</h3>
+          <p>A live command center for the job site — schedules, tasks, plans, and progress in one screen, so you run the whole operation without chasing paper or texts.</p>
+        </div>
+        <div class="acard">
+          <span class="tag">Tuned to you</span>
+          <h3>Engineered To Your Workflow</h3>
+          <p>Electrical, carpentry, plumbing, HVAC — the platform re-skins and re-tools to how you actually work. If your trade needs a feature, we have the experience to build it.</p>
+        </div>
+        <div class="acard wide">
+          <span class="tag">The promise</span>
+          <h3>Name the tool your business is missing.</h3>
+          <p>Eleven years in the trades means we've probably built something like it already. Tell us the bottleneck — we engineer the fix and fold it into your office. No feature request is off the table.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANAGED -->
+  <section id="managed" class="reveal">
+    <div class="wrap center">
+      <div class="sec-tag">Managed end to end</div>
+      <h2>From the first lead to the ad<br />that brought it in.</h2>
+      <p class="lead">You don't log in to a dozen tools. You don't manage vendors. You run your trade — we run everything from intake to advertising, and hand you the results.</p>
+    </div>
+    <div class="wrap">
+      <div class="pipe">
+        <div class="pstep"><div class="num">01 · INTAKE</div><h3>Capture</h3><p>Every call, form, and photo lands in one place, scored and triaged — the hottest lead surfaced first.</p></div>
+        <div class="pstep"><div class="num">02 · OPERATE</div><h3>Run</h3><p>Estimates, invoices, scheduling, and customer comms handled by your crew — you approve, we execute.</p></div>
+        <div class="pstep"><div class="num">03 · STAFF</div><h3>Grow The Crew</h3><p>Hiring intake, screening, and vetting against your standards — so the bench grows as fast as the work does.</p></div>
+        <div class="pstep adv"><div class="num">04 · ADVERTISING</div><h3>Get Found</h3><p>We run your social pages, your Google presence, and your ads — putting you in front of the customers searching right now.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIRING & VETTING -->
+  <section id="hiring" class="hiring reveal">
+    <div class="wrap center">
+      <div class="sec-tag">Hiring, handled</div>
+      <h2>Your next hire, vetted<br />before your phone rings.</h2>
+      <p class="lead">Growth breaks a company at the crew, not the office. So we cover that too — sourcing, intake, and vetting every applicant against the standard you set.</p>
+    </div>
+    <div class="wrap">
+      <div class="hire-banner">
+        <div class="bi"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M17 11l2 2 4-4"/></svg></div>
+        <p>We even handle intake and vetting for every new hire — screened, background-checked, and scored against <b>your</b> standards before a single résumé reaches your desk. Because once this office is running, your business is about to take off, and the crew has to be ready for it.</p>
+      </div>
+      <div class="hgrid">
+        <div class="hcard">
+          <div class="hn">01 · SOURCE</div>
+          <h3>Posted &amp; Sourced For You</h3>
+          <p>Job posts written in your voice and pushed to the boards, the local networks, and the trade groups where real tradespeople actually look — not just the big aggregators.</p>
+        </div>
+        <div class="hcard">
+          <div class="hn">02 · VET</div>
+          <h3>Screened To Your Standard</h3>
+          <p>Every applicant intake-interviewed, licenses and certifications checked, references chased, and scored against the exact bar you set for your crew. No warm bodies.</p>
+        </div>
+        <div class="hcard">
+          <div class="hn">03 · SHORTLIST</div>
+          <h3>Only The Ones Worth Your Time</h3>
+          <p>You get a ranked shortlist with notes, red flags, and interviews already scheduled around your jobs. You show up, size them up, and make the call.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOVEREIGNTY -->
+  <section class="panelbg reveal">
+    <div class="wrap center">
+      <div class="sec-tag">Sovereign by design</div>
+      <h2>Your office. Your iron. Your data.</h2>
+      <p class="lead">This is a war for privacy, and we fight it in how we operate. No lock-in, no data mining, no landlord.</p>
+    </div>
+    <div class="wrap">
+      <div class="sgrid">
+        <div class="scard"><div class="si"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M7 20h10M12 16v4"/></svg></div><h3>Hardware You Rent Or Own</h3><p>Run it on iron you rent from us or buy outright. Either way the box is yours — and the whole office lives on it, not in someone else's cloud.</p></div>
+        <div class="scard"><div class="si"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg></div><h3>100% Your Data</h3><p>Every customer, estimate, and call log is yours — encrypted, private, and fully exportable. We operate it; you own it. Walk away with all of it any time.</p></div>
+        <div class="scard"><div class="si"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/></svg></div><h3>Open Models, No Extraction</h3><p>Built on open-source models with zero data retention. The era of your business being the product is over. Your work stays yours.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" class="reveal">
+    <div class="wrap center">
+      <div class="sec-tag">Pricing</div>
+      <h2>Priced like a tool.<br />Works like a team.</h2>
+      <p class="lead">One flat build. One flat month. No per-minute meters, no surprise vendor bills, no separate accounts to babysit. Bolt on the blades your trade needs.</p>
+    </div>
+    <div class="price-wrap">
+      <div class="price-card">
+        <div class="plabel">The Core · Managed AI Office</div>
+        <div class="price-row">
+          <div class="pcol"><div class="amt">$3,500</div><div class="cap">one-time setup</div></div>
+          <div class="plus">+</div>
+          <div class="pcol"><div class="amt">$450</div><div class="cap">per month · operational</div></div>
+        </div>
+        <p class="allin">Setup covers your custom website, full platform deployment on your infrastructure, branding, data setup, and onboarding. The monthly covers operations — <b>hosting, updates, AI operation, monitoring, and support included.</b></p>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Replaces a receptionist, estimator, scheduler, a bookkeeper's workflow &amp; a 24/7 answering service</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Zero separate software, phone, or AI vendor accounts</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Customized to your trade and your operational flow</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Runs on hardware you rent from us or own outright</li>
+        </ul>
+        <a class="btn btn-gold" href="#contact">Book a walkthrough</a>
+        <button class="btn btn-blue" id="startSetup" type="button" style="width:100%;justify-content:center;margin-top:12px">Start setup</button>
+        <p id="checkoutStatus" style="font-size:12px;margin-top:10px;color:var(--dim)"></p>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="addons-head">
+        <h3>Bolt on the blades your trade runs on.</h3>
+        <p>Each package is priced separately, deploys into the same office, and is operated by us. Add one at signup or any time after.</p>
+      </div>
+
+      <div class="pgrid">
+
+        <div class="pkg featured">
+          <span class="tag">Growth</span>
+          <h4>Advertising &amp; Reputation</h4>
+          <p class="pdesc">We run your social media pages and your Google presence like a marketing department that never sleeps — content out, reviews in, leads landing straight in your office.</p>
+          <div class="pnums">
+            <div><div class="n">$950</div><div class="u">setup</div></div>
+            <div class="sep"></div>
+            <div><div class="n">$400</div><div class="u">per month</div></div>
+          </div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Facebook, Instagram &amp; Google Business posted and managed for you — real job photos, written in your voice</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Google review engine: every finished job asked, every review answered, ratings driven up</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Local SEO &amp; map-pack optimization for your service area</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Ad campaigns built, launched and tuned — ad spend billed at cost, never marked up</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Monthly report tying every lead back to the ad that rang the phone</li>
+          </ul>
+        </div>
+
+        <div class="pkg">
+          <span class="tag">Field tooling</span>
+          <h4>CAD &amp; Blueprint Agent</h4>
+          <p class="pdesc">Drawings and plan sets generated, versioned, and kept in lockstep with the estimate and the schedule — one source of truth from bid to build.</p>
+          <div class="pnums">
+            <div><div class="n">$1,500</div><div class="u">setup</div></div>
+            <div class="sep"></div>
+            <div><div class="n">$250</div><div class="u">per month</div></div>
+          </div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Drawings and plan sets produced to your trade's conventions</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Version-controlled — the field never works off an old sheet again</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Wired straight into estimating so the takeoff matches the plan</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Revisions turned around without waiting on a drafter</li>
+          </ul>
+        </div>
+
+        <div class="pkg">
+          <span class="tag">Crew app</span>
+          <h4>Field Crew App</h4>
+          <p class="pdesc">The whole job site in your crew's pocket. They open it in the morning, see the plans and their tasks, and get to work — you stop being the bottleneck.</p>
+          <div class="pnums">
+            <div><div class="n">$1,200</div><div class="u">setup</div></div>
+            <div class="sep"></div>
+            <div><div class="n">$200</div><div class="u">per month</div></div>
+          </div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Blueprints and plan sets on every phone, always current</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Daily task lists per crew member, updated the second you change them</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Photo capture, progress check-offs, and site notes straight back to the office</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Installs from the browser — no app store, no per-seat license</li>
+          </ul>
+        </div>
+
+        <div class="pkg">
+          <span class="tag">Staffing</span>
+          <h4>Hiring &amp; Vetting Desk</h4>
+          <p class="pdesc">We source, intake, and vet your next hire against your standards — so when the work doubles, the crew is already lined up behind it.</p>
+          <div class="pnums">
+            <div><div class="n">$750</div><div class="u">setup</div></div>
+            <div class="sep"></div>
+            <div><div class="n">$200</div><div class="u">per month</div></div>
+          </div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Job posts written and pushed to the boards and trade networks that matter</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Every applicant intake-interviewed and scored against your bar</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Licenses, certifications and references verified before you ever meet them</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Ranked shortlist with notes, red flags, and interviews already on your calendar</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <p class="pnote">
+        // All packages are operated by us — no extra vendors, no extra logins.<br />
+        // Need something none of these cover? <b>We build it. Name it on the walkthrough.</b>
+      </p>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="reviews reveal">
+    <div class="wrap center">
+      <div class="sec-tag">From the crews we run</div>
+      <h2>Contractors who stopped drowning in the office.</h2>
+    </div>
+    <div class="marquee" id="marquee">
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"I run the trucks. It runs everything else. First month I quoted more jobs than the whole quarter before it."</p><div class="who"><div class="av">RM</div><div><b>Client Name</b><span>Electrical Contractor</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"It answers at 9pm when I'm covered in drywall dust. That's a job I would've lost, caught and booked before I got home."</p><div class="who"><div class="av">JT</div><div><b>Client Name</b><span>Carpentry &amp; Remodel</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"The estimates are dead accurate. Real part numbers, real prices. I stopped losing margin to guesswork overnight."</p><div class="who"><div class="av">DL</div><div><b>Client Name</b><span>Service Electrician</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"My crew opens the app, sees the plans and their tasks, and gets to work. I stopped being the bottleneck."</p><div class="who"><div class="av">SP</div><div><b>Client Name</b><span>General Contractor</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"They found and vetted two hires for me while I was on a roof. Both still with me. That alone paid for the year."</p><div class="who"><div class="av">MK</div><div><b>Client Name</b><span>Roofing &amp; Exteriors</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"It's on my hardware, it's my data, and it feels like I hired four people. Best money this business ever spent."</p><div class="who"><div class="av">AV</div><div><b>Client Name</b><span>HVAC &amp; Mechanical</span></div></div></div>
+      <!-- duplicate for seamless loop -->
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"I run the trucks. It runs everything else. First month I quoted more jobs than the whole quarter before it."</p><div class="who"><div class="av">RM</div><div><b>Client Name</b><span>Electrical Contractor</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"It answers at 9pm when I'm covered in drywall dust. That's a job I would've lost, caught and booked before I got home."</p><div class="who"><div class="av">JT</div><div><b>Client Name</b><span>Carpentry &amp; Remodel</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"The estimates are dead accurate. Real part numbers, real prices. I stopped losing margin to guesswork overnight."</p><div class="who"><div class="av">DL</div><div><b>Client Name</b><span>Service Electrician</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"My crew opens the app, sees the plans and their tasks, and gets to work. I stopped being the bottleneck."</p><div class="who"><div class="av">SP</div><div><b>Client Name</b><span>General Contractor</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"They found and vetted two hires for me while I was on a roof. Both still with me. That alone paid for the year."</p><div class="who"><div class="av">MK</div><div><b>Client Name</b><span>Roofing &amp; Exteriors</span></div></div></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p class="quote">"It's on my hardware, it's my data, and it feels like I hired four people. Best money this business ever spent."</p><div class="who"><div class="av">AV</div><div><b>Client Name</b><span>HVAC &amp; Mechanical</span></div></div></div>
+    </div>
+    <p class="rnote">// Reviews from active clients, added as they come in.</p>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section id="contact" class="final reveal">
+    <div class="wrap">
+      <div class="glowbox">
+        <div class="sec-tag center" style="justify-content:center">Let's build it</div>
+        <h2>We take your company<br /><span class="gold-text">to new heights.</span></h2>
+        <p>Book a walkthrough. We'll map your operation, show you the office we'd build, and hand you a plan tuned to your trade.</p>
+        <div class="hero-cta">
+          <a class="btn btn-gold" href="mailto:hello@jackknifestudios.ai">Book a walkthrough</a>
+          <a class="btn btn-ghost" href="onboarding/" title="Paid client onboarding">Paid client onboarding</a>
+          <a class="btn btn-ghost" href="#pricing">See the packages</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div class="fabout">
+        <a class="brand" href="#top"><img src="logo.svg" width="30" height="30" alt="" /><span><b>JACKKNIFE</b> <span>STUDIOS</span></span></a>
+        <p>The managed AI office for trade contractors. Built by builders, for the trades — with eleven years on the tools behind every line of it.</p>
+      </div>
+      <div class="fcol">
+        <h4>Platform</h4>
+        <a href="#office">The Office</a>
+        <a href="#trade">Your Trade</a>
+        <a href="#managed">Managed</a>
+        <a href="#hiring">Hiring &amp; Vetting</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <div class="fcol">
+        <h4>Packages</h4>
+        <a href="#pricing">Advertising &amp; Reputation</a>
+        <a href="#pricing">CAD &amp; Blueprint Agent</a>
+        <a href="#pricing">Field Crew App</a>
+        <a href="#pricing">Hiring &amp; Vetting Desk</a>
+      </div>
+      <div class="fcol">
+        <h4>Company</h4>
+        <a href="#contact">Book a walkthrough</a>
+        <a href="mailto:hello@jackknifestudios.ai">Contact</a>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>© 2026 JackKnife Studios. Built by builders, for the trades.</span>
+      <span class="dna-text">The pattern persists.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// nav scroll state
+const hdr=document.getElementById('hdr');
+addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>20),{passive:true});
+// mobile menu
+const burger=document.getElementById('burger'),menu=document.getElementById('menu');
+burger.addEventListener('click',()=>menu.classList.toggle('open'));
+menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>menu.classList.remove('open')));
+// reveal on scroll
+const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const startSetup=document.getElementById('startSetup'),checkoutStatus=document.getElementById('checkoutStatus');
+if(startSetup)startSetup.addEventListener('click',async()=>{startSetup.disabled=true;checkoutStatus.textContent='Opening secure checkout…';try{const r=await fetch('/api/billing/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const x=await r.json();if(!r.ok)throw new Error(x.error||'Checkout unavailable');location.href=x.checkout_url}catch(e){checkoutStatus.textContent=e.message;startSetup.disabled=false}});
+</script>
+</body>
+</html>

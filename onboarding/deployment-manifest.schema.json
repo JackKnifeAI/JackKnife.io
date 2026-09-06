@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jackknifestudios.ai/schemas/deployment-manifest.schema.json",
+  "title": "JackKnife Deployment Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "client",
+    "infrastructure",
+    "platform",
+    "modules",
+    "integrations",
+    "policies"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_id": {
+      "type": "string"
+    },
+    "client": {
+      "type": "object",
+      "required": [
+        "company_name",
+        "industry",
+        "timezone"
+      ],
+      "properties": {
+        "company_name": {
+          "type": "string"
+        },
+        "industry": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "service_area": {
+          "type": "string"
+        },
+        "jurisdiction": {
+          "type": "string"
+        }
+      }
+    },
+    "infrastructure": {
+      "type": "object",
+      "properties": {
+        "ownership": {
+          "enum": [
+            "client",
+            "jackknife"
+          ]
+        },
+        "environment": {
+          "enum": [
+            "pilot",
+            "production"
+          ]
+        },
+        "isolation": {
+          "const": "per-client"
+        },
+        "private_network": {
+          "type": "string"
+        },
+        "public_ingress": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "backup_policy": {
+          "type": "string"
+        }
+      }
+    },
+    "platform": {
+      "type": "object",
+      "properties": {
+        "core_version": {
+          "type": "string"
+        },
+        "vertical_adapter": {
+          "type": "string"
+        },
+        "client_extension": {
+          "type": "string"
+        },
+        "branding_profile": {
+          "type": "string"
+        }
+      }
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "enabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "configuration": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "integrations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "provider",
+          "status"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "required",
+              "pending",
+              "connected",
+              "waived"
+            ]
+          },
+          "credential_ref": {
+            "type": "string",
+            "description": "Reference only; never raw secret material."
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "properties": {
+        "automation_level": {
+          "type": "string"
+        },
+        "approval_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "data_residency": {
+          "type": "string"
+        },
+        "retention": {
+          "type": "string"
+        },
+        "public_discovery_scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "intake_version": {
+          "type": "integer"
+        },
+        "discovery_snapshot": {
+          "type": "string"
+        },
+        "blueprint_version": {
+          "type": "integer"
+        },
+        "approved_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

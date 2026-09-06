@@ -1,0 +1,13 @@
+# JackKnife onboarding runtime state
+onboarding/server/client_profiles.db*
+onboarding/clients/
+onboarding/**/__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+
+# Local test/runtime output
+*.log
+.tmp/
+intelligence/knowledge.db*

@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jackknifestudios.ai/schemas/client-intake.schema.json",
+  "title": "JackKnife Client Intake",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "payment",
+    "business",
+    "operations",
+    "discovery",
+    "consents"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+    },
+    "payment": {
+      "type": "object",
+      "required": [
+        "status",
+        "setup_paid"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pending",
+            "paid",
+            "refunded",
+            "failed"
+          ]
+        },
+        "setup_paid": {
+          "type": "boolean"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "checkout_reference": {
+          "type": "string"
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "business": {
+      "type": "object",
+      "required": [
+        "company_name",
+        "owner_name",
+        "primary_email",
+        "website",
+        "industry",
+        "timezone"
+      ],
+      "properties": {
+        "company_name": {
+          "type": "string",
+          "minLength": 2
+        },
+        "legal_name": {
+          "type": "string"
+        },
+        "dba": {
+          "type": "string"
+        },
+        "owner_name": {
+          "type": "string"
+        },
+        "primary_email": {
+          "type": "string",
+          "format": "email"
+        },
+        "primary_phone": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri"
+        },
+        "industry": {
+          "type": "string"
+        },
+        "jurisdiction": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "service_area": {
+          "type": "string"
+        },
+        "years_in_business": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "team_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "brand_notes": {
+          "type": "string"
+        }
+      }
+    },
+    "operations": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pain_points": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lead_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "office_workflows": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "field_workflows": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "approval_preferences": {
+          "type": "string"
+        },
+        "business_hours": {
+          "type": "string"
+        },
+        "emergency_rules": {
+          "type": "string"
+        },
+        "pricing_model": {
+          "type": "string"
+        },
+        "billing_terms": {
+          "type": "string"
+        },
+        "crew_roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "systems": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "phone_sms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "crm": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accounting": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "calendar": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "payments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "suppliers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "other": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "required": [
+        "public_website_authorized"
+      ],
+      "properties": {
+        "public_website_authorized": {
+          "type": "boolean"
+        },
+        "website_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "allowed_public_sources": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "website",
+              "google_business",
+              "public_social",
+              "public_reviews"
+            ]
+          }
+        },
+        "brand_assets": {
+          "type": "boolean"
+        },
+        "crawl_notes": {
+          "type": "string"
+        },
+        "authenticated_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Names only; credentials are never stored in intake."
+        }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "properties": {
+        "infrastructure_preference": {
+          "enum": [
+            "client_owned",
+            "jackknife_managed",
+            "undecided"
+          ]
+        },
+        "data_residency": {
+          "type": "string"
+        },
+        "retention_notes": {
+          "type": "string"
+        },
+        "automation_level": {
+          "enum": [
+            "approve_everything",
+            "mixed",
+            "high_autonomy"
+          ]
+        },
+        "sensitive_data_notes": {
+          "type": "string"
+        }
+      }
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "core_office",
+          "voice",
+          "sms",
+          "estimating",
+          "invoicing",
+          "scheduling",
+          "supplier_recon",
+          "field_app",
+          "cad_blueprints",
+          "hiring",
+          "advertising",
+          "reviews",
+          "custom"
+        ]
+      }
+    },
+    "uploads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "object_ref": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "consents": {
+      "type": "object",
+      "required": [
+        "terms",
+        "privacy",
+        "public_discovery"
+      ],
+      "properties": {
+        "terms": {
+          "type": "boolean"
+        },
+        "privacy": {
+          "type": "boolean"
+        },
+        "public_discovery": {
+          "type": "boolean"
+        },
+        "contact": {
+          "type": "boolean"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"JackKnife Daily Intelligence Brief",
+  "type":"object",
+  "required":["brief_date","generated_at","findings","sources"],
+  "properties":{
+    "brief_date":{"type":"string"},
+    "generated_at":{"type":"string"},
+    "summary":{"type":"string"},
+    "findings":{"type":"array","items":{"type":"object","required":["id","topic","claim","confidence","source_ids"],"properties":{"id":{"type":"string"},"topic":{"type":"string"},"claim":{"type":"string"},"confidence":{"enum":["low","medium","high"]},"source_ids":{"type":"array","items":{"type":"string"}},"implications":{"type":"array","items":{"type":"string"}},"status":{"enum":["new","updated","supersedes","watch"]},"supersedes":{"type":["string","null"]}}}},
+    "sources":{"type":"array","items":{"type":"object","required":["id","url","title"],"properties":{"id":{"type":"string"},"url":{"type":"string"},"title":{"type":"string"},"publisher":{"type":"string"},"published_at":{"type":["string","null"]},"retrieved_at":{"type":"string"}}}},
+    "competitors":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"changes":{"type":"array","items":{"type":"string"}},"threat_level":{"enum":["low","medium","high","unknown"]}}}},
+    "recommended_actions":{"type":"array","items":{"type":"string"}}
+  }
+}

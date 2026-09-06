@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "states": [
+    "PAID",
+    "PROFILE_CREATED",
+    "INTAKE_IN_PROGRESS",
+    "INTAKE_SUBMITTED",
+    "DISCOVERY_RUNNING",
+    "DISCOVERY_REVIEW",
+    "BLUEPRINT_READY",
+    "INTEGRATIONS_PENDING",
+    "BUSINESS_MODEL_BUILT",
+    "ARCHITECTURE_PROPOSED",
+    "AGENTS_QUEUED",
+    "HUMAN_REVIEW",
+    "CLIENT_APPROVAL",
+    "DEPLOYMENT_PLANNING",
+    "DEPLOYMENT_PLAN_READY",
+    "INFRA_PROVISIONING",
+    "PLATFORM_CONFIGURING",
+    "INTEGRATION_TESTING",
+    "ACCEPTANCE_TEST",
+    "LIVE",
+    "BLOCKED",
+    "CANCELLED",
+    "EXECUTION_PREFLIGHT",
+    "EXECUTION_BLOCKED_ON_EXTERNALS",
+    "LIVE_VALIDATION",
+    "CLIENT_ACCEPTANCE_PENDING"
+  ],
+  "terminal_states": [
+    "LIVE",
+    "CANCELLED"
+  ],
+  "rules": [
+    {
+      "from": "PAID",
+      "to": "PROFILE_CREATED",
+      "actor": "system",
+      "guard": "verified setup payment webhook"
+    },
+    {
+      "from": "PROFILE_CREATED",
+      "to": "INTAKE_IN_PROGRESS",
+      "actor": "client",
+      "guard": "authenticated onboarding session"
+    },
+    {
+      "from": "INTAKE_IN_PROGRESS",
+      "to": "INTAKE_SUBMITTED",
+      "actor": "client",
+      "guard": "schema valid + required consents"
+    },
+    {
+      "from": "INTAKE_SUBMITTED",
+      "to": "DISCOVERY_RUNNING",
+      "actor": "system",
+      "guard": "public discovery authorized"
+    },
+    {
+      "from": "DISCOVERY_RUNNING",
+      "to": "DISCOVERY_REVIEW",
+      "actor": "system",
+      "guard": "crawl complete + evidence stored"
+    },
+    {
+      "from": "DISCOVERY_REVIEW",
+      "to": "BLUEPRINT_READY",
+      "actor": "system",
+      "guard": "Business Systems Blueprint generated from confirmed intake + reviewed public evidence"
+    },
+    {
+      "from": "BLUEPRINT_READY",
+      "to": "INTEGRATIONS_PENDING",
+      "actor": "operator",
+      "guard": "blueprint accepted for integration planning"
+    },
+    {
+      "from": "INTEGRATIONS_PENDING",
+      "to": "BUSINESS_MODEL_BUILT",
+      "actor": "system",
+      "guard": "minimum required integrations connected or explicitly waived"
+    },
+    {
+      "from": "BUSINESS_MODEL_BUILT",
+      "to": "ARCHITECTURE_PROPOSED",
+      "actor": "system",
+      "guard": "adapter/module plan generated"
+    },
+    {
+      "from": "ARCHITECTURE_PROPOSED",
+      "to": "HUMAN_REVIEW",
+      "actor": "operator",
+      "guard": "safety, compliance, pricing, scope review"
+    },
+    {
+      "from": "HUMAN_REVIEW",
+      "to": "CLIENT_APPROVAL",
+      "actor": "operator",
+      "guard": "proposal released to client"
+    },
+    {
+      "from": "CLIENT_APPROVAL",
+      "to": "INFRA_PROVISIONING",
+      "actor": "client",
+      "guard": "client approval recorded"
+    },
+    {
+      "from": "INFRA_PROVISIONING",
+      "to": "PLATFORM_CONFIGURING",
+      "actor": "system",
+      "guard": "isolated infrastructure healthy"
+    },
+    {
+      "from": "PLATFORM_CONFIGURING",
+      "to": "INTEGRATION_TESTING",
+      "actor": "system",
+      "guard": "client manifest compiled + platform configured"
+    },
+    {
+      "from": "INTEGRATION_TESTING",
+      "to": "ACCEPTANCE_TEST",
+      "actor": "operator",
+      "guard": "integration checks pass"
+    },
+    {
+      "from": "ACCEPTANCE_TEST",
+      "to": "LIVE",
+      "actor": "client/operator",
+      "guard": "acceptance gate signed"
+    },
+    {
+      "from": "INTAKE_SUBMITTED",
+      "to": "BLUEPRINT_READY",
+      "actor": "system",
+      "guard": "public discovery not authorized or not required; blueprint generated from confirmed intake only"
+    },
+    {
+      "from": "INTAKE_SUBMITTED",
+      "to": "AGENTS_QUEUED",
+      "actor": "system",
+      "guard": "durable onboarding agent jobs created"
+    },
+    {
+      "from": "AGENTS_QUEUED",
+      "to": "BLUEPRINT_READY",
+      "actor": "system",
+      "guard": "required agent jobs completed + artifacts written"
+    },
+    {
+      "from": "BLUEPRINT_READY",
+      "to": "DEPLOYMENT_PLANNING",
+      "actor": "operator",
+      "guard": "operator approval recorded in tamper-evident audit log"
+    },
+    {
+      "from": "DEPLOYMENT_PLANNING",
+      "to": "DEPLOYMENT_PLAN_READY",
+      "actor": "system",
+      "guard": "planning-only deployment agents completed; no live side effects"
+    },
+    {
+      "from": "BLUEPRINT_READY",
+      "to": "HUMAN_REVIEW",
+      "actor": "operator",
+      "guard": "operator returned blueprint for changes"
+    },
+    {
+      "from": "BLUEPRINT_READY",
+      "to": "BLOCKED",
+      "actor": "operator",
+      "guard": "operator blocked progression with reason"
+    },
+    {
+      "from": "DEPLOYMENT_PLAN_READY",
+      "to": "EXECUTION_PREFLIGHT",
+      "actor": "operator",
+      "guard": "separate execution approval recorded with explicit scope"
+    },
+    {
+      "from": "EXECUTION_PREFLIGHT",
+      "to": "EXECUTION_BLOCKED_ON_EXTERNALS",
+      "actor": "system",
+      "guard": "safe local preflight completed; external provider/client authorization still required"
+    },
+    {
+      "from": "EXECUTION_BLOCKED_ON_EXTERNALS",
+      "to": "LIVE_VALIDATION",
+      "actor": "operator/system",
+      "guard": "all external actions separately authorized and completed with evidence"
+    },
+    {
+      "from": "LIVE_VALIDATION",
+      "to": "CLIENT_ACCEPTANCE_PENDING",
+      "actor": "operator",
+      "guard": "live smoke tests and rollback verification pass"
+    },
+    {
+      "from": "CLIENT_ACCEPTANCE_PENDING",
+      "to": "LIVE",
+      "actor": "client/operator",
+      "guard": "client acceptance recorded"
+    }
+  ]
+}

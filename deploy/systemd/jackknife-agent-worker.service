@@ -1,0 +1,18 @@
+[Unit]
+Description=JackKnife onboarding agent worker
+After=jackknife-onboarding.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/jackknife-site
+EnvironmentFile=/etc/jackknife/onboarding.env
+ExecStart=/usr/bin/python3 -m onboarding.server.agent_worker
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/jackknife-site/onboarding/clients /opt/jackknife-site/onboarding/server
+
+[Install]
+WantedBy=multi-user.target
